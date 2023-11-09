@@ -6,6 +6,12 @@ import Home from '../screens/Home';
 import CallHistory from '../screens/CallHistory';
 import CreditHistory from '../screens/CreditHistory';
 import Settings from '../screens/Settings';
+import {
+  Home as HomeIcon,
+  Settings as SettingsIcon,
+  CreditCard as CreditCardIcon,
+  Phone as PhoneIcon,
+} from 'lucide-react-native';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -40,48 +46,53 @@ const MainStack = () => (
     screenOptions={({route}) => ({
       headerShown: false,
       tabBarHideOnKeyboard: true,
-      // tabBarIcon: ({focused, color}) => {
-      //   const size = 22;
-      //   if (route.name === 'HomeTab') {
-      //     return <HomeIcon size={size} color={color} />;
-      //   } else if (route.name === 'TransactionsTab') {
-      //     return <ArrowLeftRightIcon size={size} color={color} />;
-      //   } else if (route.name === 'HeadsTab') {
-      //     return <FolderInputIcon size={size} color={color} />;
-      //   }
-      //   return <UsersIcon size={size} color={color} />;
+      tabBarIcon: ({focused, color}) => {
+        const size = 22;
+        if (route.name === 'HomeTab') {
+          return <HomeIcon size={size} color={color} />;
+        } else if (route.name === 'CallHistoryTab') {
+          return <PhoneIcon size={size} color={color} />;
+        } else if (route.name === 'CreditHistoryTab') {
+          return <CreditCardIcon size={size} color={color} />;
+        } else if (route.name === 'SettingsTab') {
+          return <SettingsIcon size={size} color={color} />;
+        }
+      },
+      // tabBarActiveTintColor: '#0050DD',
+      // tabBarInactiveTintColor: '#64748B',
+      // tabBarLabelStyle: {
+      //   fontFamily: 'Poppins-Regular',
+      //   fontSize: 10,
       // },
-      tabBarActiveTintColor: '#0050DD',
-      tabBarInactiveTintColor: '#64748B',
-      tabBarLabelStyle: {
-        fontFamily: 'Poppins-Regular',
-        fontSize: 10,
-      },
-      tabBarStyle: {
-        height: 60,
-        paddingTop: 10,
-        paddingBottom: 5,
-        position: 'absolute',
-      },
+      // tabBarStyle: {
+      //   height: 60,
+      //   paddingTop: 10,
+      //   paddingBottom: 5,
+      //   position: 'absolute',
+      // },
     })}>
     <Tab.Screen
       name="HomeTab"
-      options={{tabBarLabel: 'Home'}}
+      // options={{ tabBarLabel: 'Home' }}
+      options={{tabBarShowLabel: false}}
       component={HomeStack}
     />
     <Tab.Screen
       name="CallHistoryTab"
-      options={{tabBarLabel: 'Call History'}}
+      // options={{ tabBarLabel: 'Call History' }}
+      options={{tabBarShowLabel: false}}
       component={CallHistoryStack}
     />
     <Tab.Screen
       name="CreditHistoryTab"
-      options={{tabBarLabel: 'Credit History'}}
+      // options={{ tabBarLabel: 'Credit History' }}
+      options={{tabBarShowLabel: false}}
       component={CreditHistoryStack}
     />
     <Tab.Screen
       name="SettingsTab"
-      options={{tabBarLabel: 'Settings'}}
+      // options={{ tabBarLabel: 'Settings' }}
+      options={{tabBarShowLabel: false}}
       component={SettingsStack}
     />
   </Tab.Navigator>
@@ -96,7 +107,11 @@ const RootStack = () => {
   return (
     <Stack.Navigator>
       {/* // <Stack.Screen name="AuthStack" component={AuthStack} /> */}
-      <Stack.Screen name="MainStack" component={MainStack} />
+      <Stack.Screen
+        name="MainStack"
+        component={MainStack}
+        options={{headerShown: false}}
+      />
       {/* // <Stack.Screen name="ProfileStack" component={ProfileStack} /> */}
     </Stack.Navigator>
   );
