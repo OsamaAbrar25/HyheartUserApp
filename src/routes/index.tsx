@@ -12,6 +12,7 @@ import {
   CreditCard as CreditCardIcon,
   Phone as PhoneIcon,
 } from 'lucide-react-native';
+import UserProfile from '../screens/UserProfile';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -112,7 +113,9 @@ const RootStack = () => {
         component={MainStack}
         options={{headerShown: false}}
       />
-      {/* // <Stack.Screen name="ProfileStack" component={ProfileStack} /> */}
+
+      <Stack.Screen name="UserProfile" component={UserProfile} options={{headerShown: false}} />
+
     </Stack.Navigator>
   );
 };
