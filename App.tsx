@@ -1,10 +1,10 @@
-import {NavigationContainer} from '@react-navigation/native';
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import React, { useRef, useState, useEffect } from 'react';
+import type { PropsWithChildren } from 'react';
 import MainNavigation from './src/routes';
 // import { useColorScheme } from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 function App(): JSX.Element {
   // const isDarkMode = useColorScheme() === 'dark';
