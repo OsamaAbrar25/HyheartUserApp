@@ -3,97 +3,51 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { PermissionsAndroid, Platform } from 'react-native';
-import {
-  ClientRoleType,
-  createAgoraRtcEngine,
-  IRtcEngine,
-  ChannelProfileType,
-} from 'react-native-agora';
 
-const appId = '85f097aec84b4d4b8819209632c45e93';
-const channelName = 'General';
-const token = '007eJxTYJj0fle9Rsy6PP8bXEHbLqflrz/4+NgmkXrDMC4RZ9EPJ2IUGCxM0wwszRNTky1MkkxSTJIsLAwtjQwszYyNkk1MUy2NLxUFpzYEMjIYvlViYIRCEJ+dwT01L7UoMYeBAQCp/h/Z';
-const uid = 0;
+import * as ZIM from 'zego-zim-react-native';
+import * as ZPNs from 'zego-zpns-react-native';
 
-const getPermission = async () => {
-  if (Platform.OS === 'android') {
-    await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-    ]);
-  }
-};
+import ZegoUIKitPrebuiltCallService, {
+  ZegoCallInvitationDialog,
+  ZegoUIKitPrebuiltCallWaitingScreen,
+  ZegoUIKitPrebuiltCallInCallScreen,
+  ZegoSendCallInvitationButton,
+  ZegoMenuBarButtonName,
+  ZegoUIKitPrebuiltCallFloatingMinimizedView,
+} from '@zegocloud/zego-uikit-prebuilt-call-rn';
+
+// import {ZegoUIKitPrebuiltCall, ONE_ON_ONE_VOICE_CALL_CONFIG } from '@zegocloud/zego-uikit-prebuilt-call-rn'
+
+const appID = 1249344658;
+const appSign = "2ed2bb743e506fe41e001c9a0db1bedb84a7134a6d6808ff544a640fdfa4d181";
+const userID = "2";
+const userName = "Test User";
 
 const Home = ({ navigation }) => {
 
-  const agoraEngineRef = useRef<IRtcEngine>(); // Agora engine instance
-  const [isJoined, setIsJoined] = useState(false); // Indicates if the local user has joined the channel
-  const [remoteUid, setRemoteUid] = useState(0); // Uid of the remote user
-  const [message, setMessage] = useState(''); // Message to the user
-
   useEffect(() => {
-    // Initialize Agora engine when the app starts
-    setupVoiceSDKEngine();
-  });
-
-  const setupVoiceSDKEngine = async () => {
     try {
-      // use the helper function to get permissions
-      if (Platform.OS === 'android') { await getPermission() };
-      agoraEngineRef.current = createAgoraRtcEngine();
-      const agoraEngine = agoraEngineRef.current;
-      agoraEngine.registerEventHandler({
-        onJoinChannelSuccess: () => {
-          showMessage('Successfully joined the channel ' + channelName);
-          setIsJoined(true);
-        },
-        onUserJoined: (_connection, Uid) => {
-          showMessage('Remote user joined with uid ' + Uid);
-          setRemoteUid(Uid);
-        },
-        onUserOffline: (_connection, Uid) => {
-          showMessage('Remote user left the channel. uid: ' + Uid);
-          setRemoteUid(0);
-        },
-      });
-      agoraEngine.initialize({
-        appId: appId,
-      });
-    } catch (e) {
-      console.log(e);
+      ZegoUIKitPrebuiltCallService.init(
+        appID, // You can get it from ZEGOCLOUD's console
+        appSign, // You can get it from ZEGOCLOUD's console
+        userID, // It can be any valid characters, but we recommend using a phone number.
+        userName,
+        [ZIM, ZPNs],
+        {
+          ringtoneConfig: {
+            incomingCallFileName: 'rutu.mp3',
+            outgoingCallFileName: 'rutu.mp3',
+          },
+          // notifyWhenAppRunningInBackgroundOrQuit: true,
+          androidNotificationConfig: {
+            channelID: "AudioChannel",
+            channelName: "CC",
+          },
+        })
+    } catch (error) {
+      console.error('Error initializing ZegoUIKitPrebuiltCallService:', error);
     }
-  };
-
-  const join = async () => {
-    if (isJoined) {
-      return;
-    }
-    try {
-      agoraEngineRef.current?.setChannelProfile(
-        ChannelProfileType.ChannelProfileCommunication,
-      );
-      agoraEngineRef.current?.joinChannel(token, channelName, uid, {
-        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const leave = () => {
-    try {
-      agoraEngineRef.current?.leaveChannel();
-      setRemoteUid(0);
-      setIsJoined(false);
-      showMessage('You left the channel');
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-
-  function showMessage(msg: string) {
-    setMessage(msg);
-  }
+  }, []);
 
   return (
     <View style={{ backgroundColor: "white", height: "100%" }}>
@@ -160,7 +114,7 @@ const Home = ({ navigation }) => {
           </ListItem.Subtitle>
         </ListItem.Content>
         <Icon name="user-large" size={25} color="#5E449B" onPress={() => navigation.navigate('UserProfile')} />
-        <Icon name="phone-volume" size={25} color="#7CFC00" style={{ marginLeft: 8 }} />
+        <Icon name="phone-volume" size={25} color="#7CFC00" style={{ marginLeft: 8 }} onPress={() => navigation.navigate('Calling')} />
       </ListItem>
 
       <ListItem
@@ -188,35 +142,31 @@ const Home = ({ navigation }) => {
           </ListItem.Subtitle>
         </ListItem.Content>
         <Icon name="user-large" size={25} color="#5E449B" onPress={() => navigation.navigate('UserProfile')} />
-        <Icon name="phone-volume" size={25} color="#7CFC00" style={{ marginLeft: 8 }} />
+        <Icon name="phone-volume" size={25} color="#7CFC00" style={{ marginLeft: 8 }} onPress={() => navigation.navigate('Calling')} />
       </ListItem>
 
+      {/* <ZegoUIKitPrebuiltCall
+        appID={appID}
+        appSign={appSign}
+        userID={userID} // userID can be something like a phone number or the user id on your own user system. 
+        userName={userName}
+        callID={callID} // callID can be any unique string. 
 
-      <SafeAreaView style={styles.main}>
-        <View style={styles.btnContainer}>
-          <Text onPress={join} style={styles.button}>
-            Join
-          </Text>
-          <Text onPress={leave} style={styles.button}>
-            Leave
-          </Text>
-        </View>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContainer}>
-          {isJoined ? (
-            <Text>Local user uid: {uid}</Text>
-          ) : (
-            <Text>Join a channel</Text>
-          )}
-          {isJoined && remoteUid !== 0 ? (
-            <Text>Remote user uid: {remoteUid}</Text>
-          ) : (
-            <Text>Waiting for a remote user to join</Text>
-          )}
-          <Text>{message}</Text>
-        </ScrollView>
-      </SafeAreaView>
+        config={{
+          // You can also use ONE_ON_ONE_VOICE_CALL_CONFIG/GROUP_VIDEO_CALL_CONFIG/GROUP_VOICE_CALL_CONFIG to make more types of calls.
+          ...ONE_ON_ONE_VOICE_CALL_CONFIG,
+          onOnlySelfInRoom: () => { navigation.navigate('Home') },
+          onHangUp: () => { navigation.navigate('Home') },
+        }}
+      /> */}
+
+      <ZegoSendCallInvitationButton
+        invitees={[{
+          userID: "1", userName: "Test User 2"
+        }]}
+        isVideoCall={false}
+        resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
+      />
 
     </View>
   );

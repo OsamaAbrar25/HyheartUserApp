@@ -4,6 +4,15 @@ import type { PropsWithChildren } from 'react';
 import MainNavigation from './src/routes';
 // import { useColorScheme } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import * as ZIM from 'zego-zim-react-native';
+import ZegoUIKitPrebuiltCallService, {
+  ZegoCallInvitationDialog,
+  ZegoUIKitPrebuiltCallWaitingScreen,
+  ZegoUIKitPrebuiltCallInCallScreen,
+  ZegoSendCallInvitationButton,
+  ZegoMenuBarButtonName,
+  ZegoUIKitPrebuiltCallFloatingMinimizedView,
+} from '@zegocloud/zego-uikit-prebuilt-call-rn';
 
 
 function App(): JSX.Element {
@@ -16,6 +25,7 @@ function App(): JSX.Element {
   return (
     // <SafeAreaView style={backgroundStyle}>
     <NavigationContainer>
+      <ZegoCallInvitationDialog />
       <MainNavigation />
     </NavigationContainer>
     // </SafeAreaView>

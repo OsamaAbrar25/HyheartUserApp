@@ -15,6 +15,16 @@ import BuyCredits from '../screens/BuyCredits';
 import CallRunning from '../screens/CallRunning';
 import Calling from '../screens/Calling';
 
+import * as ZIM from 'zego-zim-react-native';
+import ZegoUIKitPrebuiltCallService, {
+  ZegoCallInvitationDialog,
+  ZegoUIKitPrebuiltCallWaitingScreen,
+  ZegoUIKitPrebuiltCallInCallScreen,
+  ZegoSendCallInvitationButton,
+  ZegoMenuBarButtonName,
+  ZegoUIKitPrebuiltCallFloatingMinimizedView,
+} from '@zegocloud/zego-uikit-prebuilt-call-rn';
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -109,6 +119,7 @@ const RootStack = () => {
   return (
     <Stack.Navigator>
       {/* // <Stack.Screen name="AuthStack" component={AuthStack} /> */}
+
       <Stack.Screen
         name="MainStack"
         component={MainStack}
@@ -121,6 +132,19 @@ const RootStack = () => {
       <Stack.Screen name="BuyCredits" component={BuyCredits} options={{ headerShown: false }} />
       <Stack.Screen name="CallRunning" component={CallRunning} options={{ headerShown: false }} />
       <Stack.Screen name="Calling" component={Calling} options={{ headerShown: false }} />
+
+      <Stack.Screen
+        options={{ headerShown: false }}
+        // DO NOT change the name 
+        name="ZegoUIKitPrebuiltCallWaitingScreen"
+        component={ZegoUIKitPrebuiltCallWaitingScreen}
+      />
+      <Stack.Screen
+        options={{ headerShown: false }}
+        // DO NOT change the name
+        name="ZegoUIKitPrebuiltCallInCallScreen"
+        component={ZegoUIKitPrebuiltCallInCallScreen}
+      />
 
     </Stack.Navigator>
   );
