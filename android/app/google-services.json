@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "464645337735",
+    "project_id": "hyheart-3d1b2",
+    "storage_bucket": "hyheart-3d1b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464645337735:android:9a94e44a785a4c51a9be22",
+        "android_client_info": {
+          "package_name": "com.hyheartuserapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUmkOWiHbderH5oxySAm9PGRl2mVI58_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

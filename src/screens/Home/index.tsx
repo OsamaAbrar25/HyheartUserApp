@@ -36,9 +36,9 @@ const Home = ({ navigation }) => {
         {
           ringtoneConfig: {
             incomingCallFileName: 'rutu.mp3',
-            outgoingCallFileName: 'rutu.mp3',
+            outgoingCallFileName: 'ringing.mp3',
           },
-          // notifyWhenAppRunningInBackgroundOrQuit: true,
+          notifyWhenAppRunningInBackgroundOrQuit: true,
           androidNotificationConfig: {
             channelID: "AudioChannel",
             channelName: "CC",
