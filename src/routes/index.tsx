@@ -24,6 +24,7 @@ import ZegoUIKitPrebuiltCallService, {
   ZegoMenuBarButtonName,
   ZegoUIKitPrebuiltCallFloatingMinimizedView,
 } from '@zegocloud/zego-uikit-prebuilt-call-rn';
+import SignIn from '../screens/SignIn';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -120,6 +121,8 @@ const RootStack = () => {
     <Stack.Navigator>
       {/* // <Stack.Screen name="AuthStack" component={AuthStack} /> */}
 
+      <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
+
       <Stack.Screen
         name="MainStack"
         component={MainStack}
@@ -132,6 +135,7 @@ const RootStack = () => {
       <Stack.Screen name="BuyCredits" component={BuyCredits} options={{ headerShown: false }} />
       <Stack.Screen name="CallRunning" component={CallRunning} options={{ headerShown: false }} />
       <Stack.Screen name="Calling" component={Calling} options={{ headerShown: false }} />
+      
 
       <Stack.Screen
         options={{ headerShown: false }}

@@ -12,7 +12,20 @@
           "package_name": "com.hyheartuserapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "464645337735-vtjkscaf69ace4ulqblrmud1c1qqof7f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hyheartuserapp",
+            "certificate_hash": "d2318157797100187dc74f13dce5fb0eee87e427"
+          }
+        },
+        {
+          "client_id": "464645337735-ffkhbmdnod8uc9084pvtj0di82ins1tk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDUmkOWiHbderH5oxySAm9PGRl2mVI58_Y"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "464645337735-ffkhbmdnod8uc9084pvtj0di82ins1tk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
