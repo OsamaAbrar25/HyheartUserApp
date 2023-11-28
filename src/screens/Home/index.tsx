@@ -20,7 +20,7 @@ import ZegoUIKitPrebuiltCallService, {
 
 const appID = 1249344658;
 const appSign = "2ed2bb743e506fe41e001c9a0db1bedb84a7134a6d6808ff544a640fdfa4d181";
-const userID = "2";
+const userID = "1";
 const userName = "Test User";
 
 const Home = ({ navigation }) => {
@@ -89,7 +89,7 @@ const Home = ({ navigation }) => {
         <Text style={{ color: 'black', fontWeight: '600' }}>Active Users</Text>
       </View>
 
-      <ListItem
+      {/* <ListItem
         style={{
           paddingVertical: 0,
         }}>
@@ -98,12 +98,6 @@ const Home = ({ navigation }) => {
           source={{ uri: 'https://randomuser.me/api/portraits/women/53.jpg' }}
           avatarStyle={{ borderWidth: 3, borderColor: 'gold' }}
           size={50}
-        // icon={{
-        //   name: 'person-outline',
-        //   type: 'material',
-        //   size: 26,
-        // }}
-        // containerStyle={{ backgroundColor: '#c2c2c2' }}
         />
         <ListItem.Content>
           <ListItem.Title style={{ fontWeight: '700', fontSize: 14 }}>
@@ -114,8 +108,14 @@ const Home = ({ navigation }) => {
           </ListItem.Subtitle>
         </ListItem.Content>
         <Icon name="user-large" size={25} color="#5E449B" onPress={() => navigation.navigate('UserProfile')} />
-        <Icon name="phone-volume" size={25} color="#7CFC00" style={{ marginLeft: 8 }} onPress={() => navigation.navigate('Calling')} />
-      </ListItem>
+        <ZegoSendCallInvitationButton
+          invitees={[{
+            userID: "1", userName: "Test User 2"
+          }]}
+          isVideoCall={false}
+          resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
+        />
+      </ListItem> */}
 
       <ListItem
         style={{
@@ -126,12 +126,6 @@ const Home = ({ navigation }) => {
           source={{ uri: 'https://randomuser.me/api/portraits/men/36.jpg' }}
           avatarStyle={{ borderWidth: 3, borderColor: 'gold' }}
           size={50}
-        // icon={{
-        //   name: 'person-outline',
-        //   type: 'material',
-        //   size: 26,
-        // }}
-        // containerStyle={{ backgroundColor: '#c2c2c2' }}
         />
         <ListItem.Content>
           <ListItem.Title style={{ fontWeight: '700', fontSize: 14 }}>
@@ -142,7 +136,13 @@ const Home = ({ navigation }) => {
           </ListItem.Subtitle>
         </ListItem.Content>
         <Icon name="user-large" size={25} color="#5E449B" onPress={() => navigation.navigate('UserProfile')} />
-        <Icon name="phone-volume" size={25} color="#7CFC00" style={{ marginLeft: 8 }} onPress={() => navigation.navigate('Calling')} />
+        <ZegoSendCallInvitationButton
+          invitees={[{
+            userID: "2", userName: "Provider User"
+          }]}
+          isVideoCall={false}
+          resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
+        />
       </ListItem>
 
       {/* <ZegoUIKitPrebuiltCall
@@ -159,15 +159,6 @@ const Home = ({ navigation }) => {
           onHangUp: () => { navigation.navigate('Home') },
         }}
       /> */}
-
-      <ZegoSendCallInvitationButton
-        invitees={[{
-          userID: "1", userName: "Test User 2"
-        }]}
-        isVideoCall={false}
-        resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
-      />
-
     </View>
   );
 };

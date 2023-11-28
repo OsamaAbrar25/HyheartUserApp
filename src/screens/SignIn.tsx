@@ -68,32 +68,13 @@ const SignIn = ({ navigation }) => {
         }
     };
 
-    // if (!user) {
-    //     return (
-    //         <View>
-    //             <Button title="Sign in with Google" onPress={onGoogleSignIn} />
-    //         </View>
-    //     )
-    // }
-
-    // return (
-    //     <View>
-    //         <Text>yoo</Text>
-    //     </View>
-    // );
-
     if (initializing) return null;
 
-    if (user) {
-        console.log("signed in");
-        navigation.navigate("Home")
-
-    }
 
     return (
         <View>
             {user ?
-                <Text>yoo</Text>
+                navigation.navigate("MainStack")
                 :
                 <Button title="Sign in with Google" onPress={onGoogleSignIn} />
             }
