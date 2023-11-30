@@ -15,6 +15,8 @@ import ZegoUIKitPrebuiltCallService, {
   ZegoMenuBarButtonName,
   ZegoUIKitPrebuiltCallFloatingMinimizedView,
 } from '@zegocloud/zego-uikit-prebuilt-call-rn';
+import { useGetZegoTokenQuery } from '../../apis/user';
+import { useSelector } from 'react-redux';
 
 // import {ZegoUIKitPrebuiltCall, ONE_ON_ONE_VOICE_CALL_CONFIG } from '@zegocloud/zego-uikit-prebuilt-call-rn'
 
@@ -24,6 +26,13 @@ const userID = "1";
 const userName = "Test User";
 
 const Home = ({ navigation }) => {
+
+  const name = useSelector(state => state.auth.userData.name)
+  const photoURL = useSelector(state => state.auth.userData.photoURL)
+
+  const response = useGetZegoTokenQuery();
+  console.log("Zego LOG: ", response.data);
+  
 
   useEffect(() => {
     try {
@@ -67,11 +76,11 @@ const Home = ({ navigation }) => {
             size={'medium'}
             avatarStyle={{ borderWidth: 3, borderColor: 'white' }}
             source={{
-              uri: 'https://randomuser.me/api/portraits/men/96.jpg',
+              uri: photoURL,
             }}
           />
           <View>
-            <Text style={{ fontWeight: 'bold', color: 'black' }}>Hi! Osama</Text>
+            <Text style={{ fontWeight: 'bold', color: 'black' }}>Hi! {name}</Text>
             <Text style={{ fontSize: 12, color: 'gray' }}>Your Credits: 12</Text>
           </View>
         </View>

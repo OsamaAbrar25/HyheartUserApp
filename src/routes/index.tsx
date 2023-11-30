@@ -12,7 +12,7 @@ import ProviderProfile from '../screens/ProviderProfile';
 import Profile from '../screens/Profile';
 import EditProfile from '../screens/Profile/EditProfile';
 import BuyCredits from '../screens/BuyCredits';
-import CallRunning from '../screens/CallRunning';
+// import CallRunning from '../screens/CallRunning';
 import Calling from '../screens/Calling';
 
 import * as ZIM from 'zego-zim-react-native';
@@ -54,7 +54,7 @@ const SettingsStack = () => (
   </Stack.Navigator>
 );
 
-const MainStack = () => (
+const MainTabNavigator = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       headerShown: false,
@@ -118,33 +118,27 @@ const RootStack = () => {
   // const isLoggedIn = userData.jwt;
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false}}>
       {/* // <Stack.Screen name="AuthStack" component={AuthStack} /> */}
 
-      <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
+      <Stack.Screen name="SignIn" component={SignIn} />
 
-      <Stack.Screen
-        name="MainStack"
-        component={MainStack}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="MainTabNavigator" component={MainTabNavigator} />
 
-      <Stack.Screen name="ProviderProfile" component={ProviderProfile} options={{ headerShown: false }} />
-      <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-      <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
-      <Stack.Screen name="BuyCredits" component={BuyCredits} options={{ headerShown: false }} />
-      <Stack.Screen name="CallRunning" component={CallRunning} options={{ headerShown: false }} />
-      <Stack.Screen name="Calling" component={Calling} options={{ headerShown: false }} />
+      <Stack.Screen name="ProviderProfile" component={ProviderProfile} />
+      <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="BuyCredits" component={BuyCredits} />
+      {/* <Stack.Screen name="CallRunning" component={CallRunning} /> */}
+      <Stack.Screen name="Calling" component={Calling} />
       
 
       <Stack.Screen
-        options={{ headerShown: false }}
         // DO NOT change the name 
         name="ZegoUIKitPrebuiltCallWaitingScreen"
         component={ZegoUIKitPrebuiltCallWaitingScreen}
       />
       <Stack.Screen
-        options={{ headerShown: false }}
         // DO NOT change the name
         name="ZegoUIKitPrebuiltCallInCallScreen"
         component={ZegoUIKitPrebuiltCallInCallScreen}
