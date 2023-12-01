@@ -96,7 +96,6 @@ const SignIn = ({ navigation }) => {
     return (
         <View style={{height: '100%', justifyContent: 'center', alignItems: 'center'}}>
             {user ?
-                // navigation.navigate("MainTabNavigator")
                 navigation.reset({
                     index: 0,
                     routes: [{name: 'MainTabNavigator'}],
