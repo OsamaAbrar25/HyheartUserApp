@@ -1,6 +1,7 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { store } from '../store';
 // import type { Pokemon } from './types'
 
 // Define a service using a base URL and expected endpoints
@@ -14,19 +15,24 @@ export const userApi = createApi({
       // const token = AsyncStorage.getItem('JWT');
       // console.log("Token: ", token)
       // if (token) headers.set('Authorization', 'Bearer ' + token)
-      const token = getState().auth.jwt
-      if (token) {
+      const token = store.getState().auth.jwt
+      if (token) {        
         headers.set('Authorization', `Bearer ${token}`)
       }
       return headers;
     }
   }),
   endpoints: (builder) => ({
-    getZegoToken: builder.query({ query: () => `zego` }),
+    getZegoToken: builder.query({ query: () => `zego/validate-token` }),
+    getProviders: builder.query({ query: () => `profile/providers` }),
     validateFirebaseToken: builder.mutation({ query: (body) => ({ url: `auth/validate-token`, method: 'POST', body }) }),
   }),
 })
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetZegoTokenQuery, useValidateFirebaseTokenMutation } = userApi
+export const {
+  useGetZegoTokenQuery,
+  useGetProvidersQuery,
+  useValidateFirebaseTokenMutation,
+} = userApi

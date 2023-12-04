@@ -23,6 +23,13 @@ const SignIn = ({ navigation }) => {
         });
     }, []);
 
+    useEffect(() => {
+        if (validateFirebaseTokenRes.isSuccess) {
+            dispatch(storeJwt(validateFirebaseTokenRes.data.jwt));
+            console.log("JWT333333333333333333333😊 " + JSON.stringify(validateFirebaseTokenRes.data.jwt));
+        }
+    }, [validateFirebaseTokenRes.isSuccess]);
+
     // Handle user state changes
     function onAuthStateChanged(user) {
         setUser(user);
@@ -44,24 +51,34 @@ const SignIn = ({ navigation }) => {
             const user = auth().currentUser;
 
             const response = await auth().signInWithCredential(googleCredential)
-                .then((result) => {
-                    result.user
-                        .getIdToken()
-                        .then((token) => {
-                            console.log("Token: ", token);
-                            validateFirebaseToken({ token: token })
-                        })
-                        console.log(JSON.stringify(result.user));
-                        dispatch(storeUserData({
-                            name: result.user.displayName,
-                            photoURL: result.user.photoURL,
-                            email: result.user.email,
-                        }))
-                        
-                });
 
-            // const token = await user?.getIdToken();
-            // console.log(JSON.stringify(token));
+            // console.log("00000000000000000000000000", response);
+
+            // .then((result) => {
+            //     result.user
+            //         .getIdToken()
+            //         .then((token) => {
+            //             console.log("Token: ", token);
+            //             validateFirebaseToken({ token: token })
+            //                 .then((res) => dispatch(storeJwt(res.data.jwt))
+            //                 )
+            //         })
+            //     console.log(JSON.stringify(result.user));
+            //     dispatch(storeUserData({
+            //         name: result.user.displayName,
+            //         photoURL: result.user.photoURL,
+            //         email: result.user.email,
+            //     }))
+
+            // });
+
+            const token = await response.user.getIdToken();
+            await validateFirebaseToken({ token });
+            console.log("00000000000000000000000000", token);
+            // if (validateFirebaseTokenRes.isSuccess) {
+                dispatch(storeJwt(validateFirebaseTokenRes.data.jwt));
+                console.log("JWT333333333333333333333😊 " + JSON.stringify(validateFirebaseTokenRes));
+            // }
 
             // console.log(JSON.stringify(response.user.getIdTokenResult()));
 
@@ -87,19 +104,19 @@ const SignIn = ({ navigation }) => {
     if (initializing) return null;
 
     if (validateFirebaseTokenRes.isSuccess) {
-        console.log("JWT " + JSON.stringify(validateFirebaseTokenRes.data.jwt));
-        dispatch(storeJwt(validateFirebaseTokenRes.data.jwt))
+        console.log("JWT333333333333333333333 " + JSON.stringify(validateFirebaseTokenRes.data.jwt));
+        dispatch(storeJwt(validateFirebaseTokenRes.data.jwt));
         // AsyncStorage.setItem('JWT', validateFirebaseTokenRes.data.jwt);
     }
 
 
     return (
-        <View style={{height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{ height: '100%', justifyContent: 'center', alignItems: 'center' }}>
             {user ?
                 navigation.reset({
                     index: 0,
-                    routes: [{name: 'MainTabNavigator'}],
-                  })
+                    routes: [{ name: 'MainTabNavigator' }],
+                })
                 :
                 <Button
                     ViewComponent={LinearGradient} // Don't forget this!
