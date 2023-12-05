@@ -44,7 +44,7 @@ const Home = ({ navigation }) => {
   // console.log("Zego LOG: ", response.data);
 
   useEffect(() => {
-    console.log("Providers List::::::::::::::::::::::::::", providersListRes);
+    console.log("Providers List:", providersListRes);
     console.log("jwt2222222222", jwt2);
   }, [providersListRes.isSuccess]);
 
