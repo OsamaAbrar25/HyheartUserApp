@@ -46,7 +46,7 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     console.log("Providers List::::::::::::::::::::::::::", providersListRes);
     console.log("jwt2222222222", jwt2);
-  }, [providersListRes]);
+  }, [providersListRes.isSuccess]);
 
   const handleLogout = async () => {
     try {
@@ -58,6 +58,7 @@ const Home = ({ navigation }) => {
       console.error("Error while logging out:", error);
     }
   };
+
   useEffect(() => {
     try {
       ZegoUIKitPrebuiltCallService.init(
@@ -169,35 +170,35 @@ const Home = ({ navigation }) => {
         <FlatList
           data={providersListRes.data}
           renderItem={
-            ({ item }) => <Text>{JSON.stringify(item)}</Text>
+            ({ item }) => 
 
-            // <ListItem
-            //   style={{
-            //     paddingVertical: 0,
-            //   }}>
-            //   <Avatar
-            //     rounded
-            //     source={{ uri: 'https://randomuser.me/api/portraits/men/36.jpg' }}
-            //     avatarStyle={{ borderWidth: 3, borderColor: 'gold' }}
-            //     size={50}
-            //   />
-            //   <ListItem.Content>
-            //     <ListItem.Title style={{ fontWeight: '700', fontSize: 14 }}>
-            //       Osama Abrar
-            //     </ListItem.Title>
-            //     <ListItem.Subtitle style={{ fontSize: 11 }}>
-            //       M | 18-25 Years
-            //     </ListItem.Subtitle>
-            //   </ListItem.Content>
-            //   <Icon name="user-large" size={25} color="#5E449B" onPress={() => navigation.navigate('UserProfile')} />
-            //   <ZegoSendCallInvitationButton
-            //     invitees={[{
-            //       userID: "2", userName: "Provider User"
-            //     }]}
-            //     isVideoCall={false}
-            //     resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
-            //   />
-            // </ListItem>
+            <ListItem
+              style={{
+                paddingVertical: 0,
+              }}>
+              <Avatar
+                rounded
+                source={{ uri: item.pfp }}
+                avatarStyle={{ borderWidth: 3, borderColor: 'gold' }}
+                size={50}
+              />
+              <ListItem.Content>
+                <ListItem.Title style={{ fontWeight: '700', fontSize: 14 }}>
+                  {item.firstName}
+                </ListItem.Title>
+                <ListItem.Subtitle style={{ fontSize: 11 }}>
+                  {item.gender}M | {item.dob}18-25 Years
+                </ListItem.Subtitle>
+              </ListItem.Content>
+              <Icon name="user-large" size={25} color="#5E449B" onPress={() => navigation.navigate('UserProfile')} />
+              <ZegoSendCallInvitationButton
+                invitees={[{
+                  userID: `${item.id}`, userName: `${item.firstName}`
+                }]}
+                isVideoCall={false}
+                resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
+              />
+            </ListItem>
           }
           keyExtractor={(item) => item.id}
         />

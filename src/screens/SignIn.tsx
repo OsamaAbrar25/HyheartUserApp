@@ -16,10 +16,10 @@ const SignIn = ({ navigation }) => {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
-  const [validateFirebaseToken, validateFirebaseTokenRes] =
-    useValidateFirebaseTokenMutation();
+  const [validateFirebaseToken, validateFirebaseTokenRes] = useValidateFirebaseTokenMutation();
   const dispatch = useDispatch();
   const jwt2 = useSelector((state) => state.auth.jwt);
+
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
@@ -30,10 +30,7 @@ const SignIn = ({ navigation }) => {
   useEffect(() => {
     if (validateFirebaseTokenRes.isSuccess) {
       dispatch(storeJwt(validateFirebaseTokenRes.data.jwt));
-      console.log(
-        "JWT333333333333333333333😊 " +
-          JSON.stringify(validateFirebaseTokenRes.data.jwt)
-      );
+      console.log("JWT333😊" + JSON.stringify(validateFirebaseTokenRes.data.jwt));
     }
   }, [validateFirebaseTokenRes.isSuccess]);
 
@@ -42,16 +39,16 @@ const SignIn = ({ navigation }) => {
     setUser(user);
     if (initializing) setInitializing(false);
   }
-  const handleLogout = async () => {
-    try {
-      await auth().signOut();
-      // Do something after successful logout, e.g., navigate to login screen
-      // navigation.navigate('Login'); // If using navigation
-    } catch (error) {
-      // Handle logout error
-      console.error("Error while logging out:", error);
-    }
-  };
+//   const handleLogout = async () => {
+//     try {
+//       await auth().signOut();
+//       // Do something after successful logout, e.g., navigate to login screen
+//       // navigation.navigate('Login'); // If using navigation
+//     } catch (error) {
+//       // Handle logout error
+//       console.error("Error while logging out:", error);
+//     }
+//   };
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
@@ -64,7 +61,6 @@ const SignIn = ({ navigation }) => {
       const googleCredential = auth.GoogleAuthProvider.credential(
         userInfo.idToken
       );
-      const user = auth().currentUser;
 
       const response = await auth().signInWithCredential(googleCredential);
 
@@ -80,11 +76,11 @@ const SignIn = ({ navigation }) => {
       //                 )
       //         })
       //     console.log(JSON.stringify(result.user));
-      //     dispatch(storeUserData({
-      //         name: result.user.displayName,
-      //         photoURL: result.user.photoURL,
-      //         email: result.user.email,
-      //     }))
+          dispatch(storeUserData({
+              name: response.user.displayName,
+              photoURL: response.user.photoURL,
+              email: response.user.email,
+          }))
 
       // });
 
