@@ -26,21 +26,18 @@ const appSign =
   "2ed2bb743e506fe41e001c9a0db1bedb84a7134a6d6808ff544a640fdfa4d181";
 
 const Home: React.FC<HomeProps> = ({ navigation }) => {
-  const userdata = useSelector(
-    (state: { auth: AuthState }) => state.auth.userData
-  );
+
+  const dispatch = useDispatch();
+  const userdata = useSelector((state: { auth: AuthState }) => state.auth.userData);
   console.log("🔴" + JSON.stringify(userdata));
 
-  const longUserID: string = userdata.id.replace("-", "");
-  const userID = longUserID.substring(5); //! JUGAAD
+  const userID: string = userdata.id;
+  // const userID = longUserID.substring(5); //! JUGAAD
 
-  const userName = userdata.name;
-  const dispatch = useDispatch();
   const name = useSelector((state: RootState) => state.auth.userData.name);
-  const photoURL = useSelector(
-    (state: RootState) => state.auth.userData.photoURL
-  );
+  const photoURL = useSelector((state: RootState) => state.auth.userData.photoURL);
   const jwt = useSelector((state: RootState) => state.auth.jwt);
+  const userName = userdata.name;
 
   const response = useGetZegoTokenQuery();
   const providersListRes = useGetProvidersQuery();
@@ -59,7 +56,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
         storeUserData({
           name: data.firstName,
           photoURL: data.pfp,
-          id: data.id,
+          id: data.id.substring(0, 8),
           // email: res.data.email,
         })
       );
@@ -67,31 +64,31 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
     }
   }, [data, isLoading]);
 
-  useEffect(() => {
-    try {
-      userdata &&
-        ZegoUIKitPrebuiltCallService.init(
-          appID, // You can get it from ZEGOCLOUD's console
-          appSign, // You can get it from ZEGOCLOUD's console
-          userID, // It can be any valid characters, but we recommend using a phone number.
-          userName,
-          [ZIM, ZPNs],
-          {
-            ringtoneConfig: {
-              incomingCallFileName: "rutu.mp3",
-              outgoingCallFileName: "ringing.mp3",
-            },
-            notifyWhenAppRunningInBackgroundOrQuit: true,
-            androidNotificationConfig: {
-              channelID: "AudioChannel",
-              channelName: "CC",
-            },
-          }
-        );
-    } catch (error) {
-      console.error("Error initializing ZegoUIKitPrebuiltCallService:", error);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   try {
+  //     userdata &&
+  //       ZegoUIKitPrebuiltCallService.init(
+  //         appID, // You can get it from ZEGOCLOUD's console
+  //         appSign, // You can get it from ZEGOCLOUD's console
+  //         userID, // It can be any valid characters, but we recommend using a phone number.
+  //         userName,
+  //         [ZIM, ZPNs],
+  //         {
+  //           ringtoneConfig: {
+  //             incomingCallFileName: "rutu.mp3",
+  //             outgoingCallFileName: "ringing.mp3",
+  //           },
+  //           notifyWhenAppRunningInBackgroundOrQuit: true,
+  //           androidNotificationConfig: {
+  //             channelID: "AudioChannel",
+  //             channelName: "CC",
+  //           },
+  //         }
+  //       );
+  //   } catch (error) {
+  //     console.error("Error initializing ZegoUIKitPrebuiltCallService:", error);
+  //   }
+  // }, [data]);
 
   useEffect(() => {
     try {
@@ -191,23 +188,6 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
         />
       )}
 
-      {/* <ZegoUIKitPrebuiltCallService
-        appID={appID}
-        appSign={appSign}
-        userID={userID} // userID can be something like a phone number or the user id on your own user system.
-        userName={userName}
-        callID={userID} // callID can be any unique string.
-        config={{
-          // You can also use ONE_ON_ONE_VOICE_CALL_CONFIG/GROUP_VIDEO_CALL_CONFIG/GROUP_VOICE_CALL_CONFIG to make more types of calls.
-          ...ONE_ON_ONE_VOICE_CALL_CONFIG,
-          onOnlySelfInRoom: () => {
-            navigation.navigate("Home");
-          },
-          onHangUp: () => {
-            navigation.navigate("Home");
-          },
-        }}
-      /> */}
     </View>
   );
 };
