@@ -26,17 +26,7 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ navigation }) => {
 
-  const dispatch = useDispatch();
-  const userdata = useSelector((state: { auth: AuthState }) => state.auth.userData);
-  // console.log("🔴" + JSON.stringify(userdata));
-
-  const userID: string = userdata.id;
-
-  const name = useSelector((state: RootState) => state.auth.userData.name);
-  const photoURL = useSelector((state: RootState) => state.auth.userData.photoURL);
-  const jwt = useSelector((state: RootState) => state.auth.jwt);
-  const userName = userdata.name;
-  const [callID, setCallID] = useState('');
+   const [callID, setCallID] = useState('');
 
   const response = useGetZegoTokenQuery();
   const providersListRes = useGetProvidersQuery();
@@ -44,27 +34,24 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   const [createCall, createCallRes] = useCreateCallMutation();
   const [updateCallHistory, updateCallHistoryRes] = useUpdateCallHistoryMutation();
 
-  if (userdata) {
-    // console.log("JWT: 👍👍👍👍👍👍", jwt);
+  const dispatch = useDispatch();
+  const userdata = useSelector((state: { auth: AuthState }) => state.auth.userData);
+  const userID: string = userdata.id;
+  const name = useSelector((state: RootState) => state.auth.userData.name);
+  const photoURL = useSelector((state: RootState) => state.auth.userData.photoURL);
+  const jwt = useSelector((state: RootState) => state.auth.jwt);
+  const userName = userdata.name;
 
+  // if (createCallRes.isSuccess) {
+  //   console.log("😁😁😁❤️❤️❤️", JSON.stringify(createCallRes.data));
+  // }
+
+  const handleCall = () => {
+    // console.log("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
+    createCall({
+      recieverId: "31d5c34f-02e5-4ddb-8b47-94c88fcce95f"
+    })
   }
-
-  useEffect(() => {
-    // console.log("😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘", createCallRes.data);
-  }, [createCallRes.isSuccess])
-
-  useEffect(() => {
-    if (createCallRes.isSuccess && callID) {
-      console.log("❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️");
-      
-      updateCallHistory(
-        {
-          id: createCallRes.data.id,
-          status: "CONNECTED"
-        })
-    }
-  }, [createCallRes.isSuccess, callID])
-
 
   const handleLogout = async () => {
     try {
@@ -74,6 +61,22 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
       console.error("Error while logging out:", error);
     }
   };
+
+  useEffect(() => {
+    // console.log("😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘", createCallRes.data);
+  }, [createCallRes.isSuccess])
+
+  useEffect(() => {
+    if (createCallRes.isSuccess && callID) {
+      console.log("❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️");
+
+      updateCallHistory(
+        {
+          id: createCallRes.data.id,
+          status: "CONNECTED"
+        })
+    }
+  }, [createCallRes.isSuccess, callID])
 
   useEffect(() => {
     if (data) {
@@ -88,19 +91,6 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
       userdata && console.log("😂" + JSON.stringify(userdata));
     }
   }, [data, isLoading]);
-
-  if (createCallRes.isSuccess) {
-    console.log("😁😁😁❤️❤️❤️", JSON.stringify(createCallRes.data));
-  }
-
-  const handleCall = () => {
-    // console.log("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
-
-    createCall({
-      recieverId: "31d5c34f-02e5-4ddb-8b47-94c88fcce95f"
-    })
-  }
-
 
 
   useEffect(() => {
