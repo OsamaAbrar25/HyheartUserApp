@@ -11,12 +11,14 @@ export interface AuthState {
   jwt: string | null;
   isLoggedIn: boolean;
   userData: UserData;
+  callId: string;
 }
 
 const initialState: AuthState = {
   jwt: null,
   isLoggedIn: false,
   userData: {},
+  callId: '',
 };
 
 const authSlice = createSlice({
@@ -37,12 +39,24 @@ const authSlice = createSlice({
     removeJwt(state) {
       state.jwt = null;
     },
+    storeProviderCallId(state, action: PayloadAction<string>) {
+      state.callId = action.payload;
+    },
+    removeProviderCallId(state) {
+      state.callId = '';
+    },
   },
 });
 
 // Extract the action creators object and the reducer
 const { actions, reducer } = authSlice;
 // Extract and export each action creator by name
-export const { storeUserData, removeUserData, storeJwt, removeJwt } = actions;
+export const {
+  storeUserData,
+  removeUserData,
+  storeJwt,
+  removeJwt,
+  storeProviderCallId
+} = actions;
 // Export the reducer as a default export
 export default reducer;

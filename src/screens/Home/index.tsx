@@ -12,44 +12,69 @@ import {
   useGetZegoTokenQuery,
   useGetProvidersQuery,
   useGetProfileQuery,
+  useCreateCallMutation,
+  useUpdateCallHistoryMutation,
 } from "../../apis/user";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store";
-import { AuthState, storeUserData } from "../../store/slices/authSlice";
+import { AuthState, removeJwt, storeProviderCallId, storeUserData } from "../../store/slices/authSlice";
+import { APP_ID, APP_SIGN } from "../../constants";
 
 interface HomeProps {
   navigation: any;
 }
 
-const appID = 1249344658;
-const appSign =
-  "2ed2bb743e506fe41e001c9a0db1bedb84a7134a6d6808ff544a640fdfa4d181";
-
 const Home: React.FC<HomeProps> = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const userdata = useSelector((state: { auth: AuthState }) => state.auth.userData);
-  console.log("🔴" + JSON.stringify(userdata));
+  // console.log("🔴" + JSON.stringify(userdata));
 
   const userID: string = userdata.id;
-  // const userID = longUserID.substring(5); //! JUGAAD
 
   const name = useSelector((state: RootState) => state.auth.userData.name);
   const photoURL = useSelector((state: RootState) => state.auth.userData.photoURL);
   const jwt = useSelector((state: RootState) => state.auth.jwt);
   const userName = userdata.name;
+  const [callID, setCallID] = useState('');
 
   const response = useGetZegoTokenQuery();
   const providersListRes = useGetProvidersQuery();
   const { data, isLoading, isSuccess } = useGetProfileQuery();
+  const [createCall, createCallRes] = useCreateCallMutation();
+  const [updateCallHistory, updateCallHistoryRes] = useUpdateCallHistoryMutation();
+
+  if (userdata) {
+    // console.log("JWT: 👍👍👍👍👍👍", jwt);
+
+  }
+
+  useEffect(() => {
+    // console.log("😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘", createCallRes.data);
+  }, [createCallRes.isSuccess])
+
+  useEffect(() => {
+    if (createCallRes.isSuccess && callID) {
+      console.log("❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️");
+      
+      updateCallHistory(
+        {
+          id: createCallRes.data.id,
+          status: "CONNECTED"
+        })
+    }
+  }, [createCallRes.isSuccess, callID])
+
 
   const handleLogout = async () => {
     try {
       await auth().signOut();
+      dispatch(removeJwt())
     } catch (error) {
       console.error("Error while logging out:", error);
     }
   };
+
   useEffect(() => {
     if (data) {
       dispatch(
@@ -64,37 +89,25 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
     }
   }, [data, isLoading]);
 
-  // useEffect(() => {
-  //   try {
-  //     userdata &&
-  //       ZegoUIKitPrebuiltCallService.init(
-  //         appID, // You can get it from ZEGOCLOUD's console
-  //         appSign, // You can get it from ZEGOCLOUD's console
-  //         userID, // It can be any valid characters, but we recommend using a phone number.
-  //         userName,
-  //         [ZIM, ZPNs],
-  //         {
-  //           ringtoneConfig: {
-  //             incomingCallFileName: "rutu.mp3",
-  //             outgoingCallFileName: "ringing.mp3",
-  //           },
-  //           notifyWhenAppRunningInBackgroundOrQuit: true,
-  //           androidNotificationConfig: {
-  //             channelID: "AudioChannel",
-  //             channelName: "CC",
-  //           },
-  //         }
-  //       );
-  //   } catch (error) {
-  //     console.error("Error initializing ZegoUIKitPrebuiltCallService:", error);
-  //   }
-  // }, [data]);
+  if (createCallRes.isSuccess) {
+    console.log("😁😁😁❤️❤️❤️", JSON.stringify(createCallRes.data));
+  }
+
+  const handleCall = () => {
+    // console.log("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
+
+    createCall({
+      recieverId: "31d5c34f-02e5-4ddb-8b47-94c88fcce95f"
+    })
+  }
+
+
 
   useEffect(() => {
     try {
       ZegoUIKitPrebuiltCallService.init(
-        appID, // You can get it from ZEGOCLOUD's console
-        appSign, // You can get it from ZEGOCLOUD's console
+        APP_ID, // You can get it from ZEGOCLOUD's console
+        APP_SIGN, // You can get it from ZEGOCLOUD's console
         userID, // It can be any valid characters, but we recommend using a phone number.
         userName,
         [ZIM, ZPNs],
@@ -102,6 +115,24 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
           ringtoneConfig: {
             incomingCallFileName: "rutu.mp3",
             outgoingCallFileName: "ringing.mp3",
+          },
+          onOutgoingCallAccepted: async (callID, invitee) => {
+            console.log("💕Call Id: " + callID + ", 👌Invitee: " + JSON.stringify(invitee));
+            setCallID(callID);
+          },
+          requireConfig: (data) => {
+            return {
+              durationConfig: {
+                isVisible: true,
+                onDurationUpdate: (duration) => {
+                  // console.log("🙌🙌🙌", data);
+
+                  if (duration === 1 * 60) {
+                    ZegoUIKitPrebuiltCallService.hangUp();
+                  }
+                },
+              },
+            };
           },
           notifyWhenAppRunningInBackgroundOrQuit: true,
           androidNotificationConfig: {
@@ -115,8 +146,10 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
     }
   }, []);
 
+
   return (
     <View style={{ backgroundColor: "white", height: "100%" }}>
+
       <View style={styles.header}>
         <View style={styles.profileInfo}>
           <Avatar
@@ -172,15 +205,38 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
                 color="#5E449B"
                 onPress={() => navigation.navigate("UserProfile")}
               />
+              {/* <Button title='Call' onPress={() => {
+                // const newInvitees = invitees.map((inviteeID) => {
+                //   return { userID: inviteeID, userName: 'user_' + inviteeID };
+                // });
+                ZegoUIKitPrebuiltCallService
+                  .sendCallInvitation(
+                    [{
+                      userID: `${item.id.substring(0, 8)}`,
+                      userName: `${item.firstName}`,
+                    }],
+                    false,
+                    navigation,
+                    {
+                      resourceID: 'zego_data',
+                      timeout: 60,
+                      callID: '123',
+                      notificationTitle: 'Title',
+                      notificationMessage: 'Message',
+                      customData: '',
+                    }
+                  );
+              }} /> */}
               <ZegoSendCallInvitationButton
                 invitees={[
                   {
-                    userID: `${item.id}`,
+                    userID: `${item.id.substring(0, 8)}`,
                     userName: `${item.firstName}`,
                   },
                 ]}
                 isVideoCall={false}
                 resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
+                onPressed={() => handleCall()}
               />
             </ListItem>
           )}

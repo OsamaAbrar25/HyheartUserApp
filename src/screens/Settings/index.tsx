@@ -7,7 +7,7 @@ import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
 import Header from "../../components/Header";
 
 interface SettingsProps {
-  navigation: { navigate: (route: string) => void };
+  navigation: any;
 }
 
 const Settings: React.FC<SettingsProps> = ({ navigation }) => {
@@ -50,16 +50,12 @@ const Settings: React.FC<SettingsProps> = ({ navigation }) => {
         {renderItem("user-large", "My Profile", () =>
           navigation.navigate("Profile")
         )}
-        {renderItem("credit-card-clock", "Credit History", () => {})}
-        {renderItem("history", "Call History", () => {})}
-        {renderItem("email-open", "Invite", () => {})}
-        {renderItem("note-text", "Privacy Policy", () => {})}
-        {renderItem("note-text", "Terms & Conditions", () =>
-          navigation.navigate("Calling")
-        )}
-        {renderItem("information", "App Info", () =>
-          navigation.navigate("CallRunning")
-        )}
+        {renderItem("credit-card-clock", "Credit History", () => { })}
+        {renderItem("history", "Call History", () => { })}
+        {renderItem("email-open", "Invite", () => { })}
+        {renderItem("note-text", "Privacy Policy", () => { })}
+        {renderItem("note-text", "Terms & Conditions", () => { })}
+        {renderItem("information", "App Info", () => { })}
       </ScrollView>
     </View>
   );

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Button } from "react-native";
+import { View, Button, Text, ScrollView } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { useValidateFirebaseTokenMutation } from "../apis/user";
 import { useDispatch, useSelector } from "react-redux";
 import { storeJwt, storeUserData } from "../store/slices/authSlice";
+import DisplayAsyncStorageValues from "../components/DisplayAsyncStorageValues";
 
 const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [initializing, setInitializing] = useState<boolean>(true);
@@ -13,6 +14,7 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [token, setToken] = useState<string | undefined>();
   const [validateFirebaseToken] = useValidateFirebaseTokenMutation();
   const jwt = useSelector((state: any) => state.auth.jwt);
+  const [responseState, setResponseState] = useState<string[]>([])
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -48,17 +50,19 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
       const response = await auth().signInWithCredential(googleCredential);
       const tokenres = await response.user.getIdToken();
       if (tokenres) {
-        console.log("hey");
+        setResponseState((prev) => [...prev, tokenres])
         setToken(tokenres);
       }
     } catch (error) {
       console.log(error);
+      setResponseState((prev) => [...prev, JSON.stringify(error)])
     }
   };
 
   const handleFirebaseTokenValidation = async () => {
     try {
       const res = await validateFirebaseToken({ token });
+      setResponseState((prev) => [...prev, JSON.stringify(res)])
       if (res.data) {
         console.log("😂" + JSON.stringify(res.data));
         dispatch(storeJwt(res.data.jwt));
@@ -66,27 +70,34 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
         jwt && console.log("😂" + jwt);
       } else {
         console.error("Failed to validate Firebase token");
+        setResponseState((prev) => [...prev, "Failed to validate Firebase token"])
       }
     } catch (error) {
       console.error("Error while validating Firebase token", error);
+      setResponseState((prev) => [...prev, JSON.stringify(error)])
     }
   };
 
   if (initializing) return null;
 
   return (
-    <View
-      style={{ height: "100%", justifyContent: "center", alignItems: "center" }}
-    >
-      {!jwt ? (
-        <Button title="Sign in with Google" onPress={onGoogleSignIn} />
-      ) : (
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "MainTabNavigator" }],
-        })
-      )}
-    </View>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <View
+        style={{ height: "100%", justifyContent: "center", alignItems: "center" }}
+      >
+        {/* {responseState.map(item => <Text style={{ color: "black" }}>{item}</Text>)} */}
+        {!jwt ? (
+          <Button title="Sign in with Google" onPress={onGoogleSignIn} />
+        ) : (
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "MainTabNavigator" }],
+          })
+        )}
+        {/* <Text style={{ color: "black" }}>JWT: {jwt}</Text> */}
+        {/* <DisplayAsyncStorageValues /> */}
+      </View>
+    </ScrollView>
   );
 };
 

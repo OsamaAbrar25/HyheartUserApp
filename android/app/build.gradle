@@ -90,10 +90,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file('hyheartrelease.keystore')
+            storePassword 'zxcvbnm@123'
+            keyAlias 'hyheartreleasekey'
+            keyPassword 'zxcvbnm@123'
         }
     }
     buildTypes {

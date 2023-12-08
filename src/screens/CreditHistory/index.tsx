@@ -3,7 +3,9 @@ import { View, Text } from "react-native";
 import Header from "../../components/Header";
 import { Button, ListItem } from "@rneui/themed";
 
-interface CreditHistoryProps {}
+interface CreditHistoryProps {
+  navigation: any;
+}
 
 const CreditHistory: React.FC<CreditHistoryProps> = () => {
   return (
