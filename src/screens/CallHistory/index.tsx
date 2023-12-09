@@ -17,6 +17,31 @@ const CallHistory: React.FC<CallHistoryProps> = ({ navigation }) => {
       <Header title={"Call History"} />
       <View style={{ padding: 10 }}>
 
+        <ListItem
+          containerStyle={{ borderRadius: 6 }}
+          style={{
+            paddingVertical: 4,
+          }}
+        >
+          <ListItem.Content
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <View>
+              <ListItem.Title style={{ fontWeight: "700", fontSize: 12 }}>
+                Provider Name
+              </ListItem.Title>
+              <ListItem.Subtitle style={{ fontSize: 11 }}>
+                09:32 PM
+              </ListItem.Subtitle>
+            </View>
+            <ListItem.Subtitle>24:43</ListItem.Subtitle>
+          </ListItem.Content>
+        </ListItem>
+
         {callHistoryRes.isSuccess &&
           <FlatList
             data={callHistoryRes.data}

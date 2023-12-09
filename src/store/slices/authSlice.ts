@@ -12,6 +12,8 @@ export interface AuthState {
   isLoggedIn: boolean;
   userData: UserData;
   callId: string;
+  callHistoryId: string;
+  duration: number;
 }
 
 const initialState: AuthState = {
@@ -19,6 +21,8 @@ const initialState: AuthState = {
   isLoggedIn: false,
   userData: {},
   callId: '',
+  callHistoryId: '',
+  duration: 0,
 };
 
 const authSlice = createSlice({
@@ -45,6 +49,12 @@ const authSlice = createSlice({
     removeProviderCallId(state) {
       state.callId = '';
     },
+    storeCallHistoryId(state, action: PayloadAction<string>) {
+      state.callHistoryId = action.payload;
+    },
+    storeDuration(state, action: PayloadAction<number>) {
+      state.duration = action.payload;
+    },
   },
 });
 
@@ -56,7 +66,10 @@ export const {
   removeUserData,
   storeJwt,
   removeJwt,
-  storeProviderCallId
+  storeProviderCallId,
+  removeProviderCallId,
+  storeCallHistoryId,
+  storeDuration,
 } = actions;
 // Export the reducer as a default export
 export default reducer;

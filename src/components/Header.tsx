@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({ title, navigation }) => {
       }}
     >
       <Text style={{ fontWeight: "700", color: "black" }}>{title}</Text>
-      <Button {...buttonProps} />
+      {/* <Button {...buttonProps} /> */}
     </View>
   );
 };

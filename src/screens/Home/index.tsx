@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, Alert } from "react-native";
 import { Button, ListItem, Avatar } from "@rneui/themed";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import auth from "@react-native-firebase/auth";
@@ -7,6 +7,11 @@ import * as ZIM from "zego-zim-react-native";
 import * as ZPNs from "zego-zpns-react-native";
 import ZegoUIKitPrebuiltCallService, {
   ZegoSendCallInvitationButton,
+} from "@zegocloud/zego-uikit-prebuilt-call-rn";
+import {
+  ZegoUIKitPrebuiltCall,
+  ONE_ON_ONE_VOICE_CALL_CONFIG,
+  UIKitConfig,
 } from "@zegocloud/zego-uikit-prebuilt-call-rn";
 import {
   useGetZegoTokenQuery,
@@ -17,7 +22,7 @@ import {
 } from "../../apis/user";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store";
-import { AuthState, removeJwt, storeProviderCallId, storeUserData } from "../../store/slices/authSlice";
+import { AuthState, removeJwt, storeCallHistoryId, storeDuration, storeProviderCallId, storeUserData } from "../../store/slices/authSlice";
 import { APP_ID, APP_SIGN } from "../../constants";
 
 interface HomeProps {
@@ -26,11 +31,12 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ navigation }) => {
 
-   const [callID, setCallID] = useState('');
+  const [callID, setCallID] = useState('');
+  const [duration, setDuration] = useState(0);
 
   const response = useGetZegoTokenQuery();
   const providersListRes = useGetProvidersQuery();
-  const { data, isLoading, isSuccess } = useGetProfileQuery();
+  const profileRes = useGetProfileQuery();
   const [createCall, createCallRes] = useCreateCallMutation();
   const [updateCallHistory, updateCallHistoryRes] = useUpdateCallHistoryMutation();
 
@@ -41,6 +47,8 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   const photoURL = useSelector((state: RootState) => state.auth.userData.photoURL);
   const jwt = useSelector((state: RootState) => state.auth.jwt);
   const userName = userdata.name;
+  const callHistoryId = useSelector((state: { auth: AuthState }) => state.auth.callHistoryId);
+  // const duration = useSelector((state: { auth: AuthState }) => state.auth.duration);
 
   // if (createCallRes.isSuccess) {
   //   console.log("😁😁😁❤️❤️❤️", JSON.stringify(createCallRes.data));
@@ -57,84 +65,126 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
     try {
       await auth().signOut();
       dispatch(removeJwt())
+      // return ZegoUIKitPrebuiltCallService.uninit()
     } catch (error) {
       console.error("Error while logging out:", error);
     }
   };
 
-  useEffect(() => {
-    // console.log("😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘", createCallRes.data);
-  }, [createCallRes.isSuccess])
+  // useEffect(() => {
+  //   // console.log("😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘", createCallRes.data);
+  // }, [createCallRes.isSuccess])
+
+  // const config: UIKitConfig = {
+  //   ...ONE_ON_ONE_VOICE_CALL_CONFIG,
+  //   onOnlySelfInRoom: () => {
+  //     navigation.navigate("Home");
+  //   },
+  //   onHangUp: () => {
+  //     console.log("😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁❤️");
+
+  //     if (createCallRes.data.id) {
+  //       const res = 
+  //        updateCallHistory(
+  //         {
+  //           id: createCallRes.data.id,
+  //           status: "CONNECTED",
+  //           duration: duration,
+  //         })
+  //         console.log("❤️❤️❤️❤️❤️😘😘😘😘🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️",JSON.stringify(res));
+
+  //     }
+  //     navigation.navigate("Home");
+  //   },
+  // };
 
   useEffect(() => {
     if (createCallRes.isSuccess && callID) {
-      console.log("❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️");
-
+      // console.log("❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️");
       updateCallHistory(
         {
           id: createCallRes.data.id,
           status: "CONNECTED"
         })
+      dispatch(storeCallHistoryId(createCallRes.data.id))
+      dispatch(storeDuration(duration))
     }
   }, [createCallRes.isSuccess, callID])
 
   useEffect(() => {
-    if (data) {
+    if (createCallRes.isSuccess && duration > 0) {
+      updateCallHistory(
+        {
+          id: createCallRes.data.id,
+          status: "CONNECTED",
+          duration: duration,
+        })
+    }
+  }, [createCallRes.isSuccess, duration])
+
+  useEffect(() => {
+    if (profileRes.data) {
       dispatch(
         storeUserData({
-          name: data.firstName,
-          photoURL: data.pfp,
-          id: data.id.substring(0, 8),
+          name: profileRes.data.firstName,
+          photoURL: profileRes.data.pfp,
+          id: profileRes.data.id.substring(0, 8),
           // email: res.data.email,
         })
       );
       userdata && console.log("😂" + JSON.stringify(userdata));
     }
-  }, [data, isLoading]);
+  }, [profileRes.data, profileRes.isLoading]);
 
 
-  useEffect(() => {
-    try {
-      ZegoUIKitPrebuiltCallService.init(
-        APP_ID, // You can get it from ZEGOCLOUD's console
-        APP_SIGN, // You can get it from ZEGOCLOUD's console
-        userID, // It can be any valid characters, but we recommend using a phone number.
-        userName,
-        [ZIM, ZPNs],
-        {
-          ringtoneConfig: {
-            incomingCallFileName: "rutu.mp3",
-            outgoingCallFileName: "ringing.mp3",
-          },
-          onOutgoingCallAccepted: async (callID, invitee) => {
-            console.log("💕Call Id: " + callID + ", 👌Invitee: " + JSON.stringify(invitee));
-            setCallID(callID);
-          },
-          requireConfig: (data) => {
-            return {
-              durationConfig: {
-                isVisible: true,
-                onDurationUpdate: (duration) => {
-                  // console.log("🙌🙌🙌", data);
-
-                  if (duration === 1 * 60) {
-                    ZegoUIKitPrebuiltCallService.hangUp();
-                  }
-                },
+  // useEffect(() => {
+  try {
+    ZegoUIKitPrebuiltCallService.init(
+      APP_ID, // You can get it from ZEGOCLOUD's console
+      APP_SIGN, // You can get it from ZEGOCLOUD's console
+      userID, // It can be any valid characters, but we recommend using a phone number.
+      userName,
+      [ZIM, ZPNs],
+      {
+        ringtoneConfig: {
+          incomingCallFileName: "rutu.mp3",
+          outgoingCallFileName: "ringing.mp3",
+        },
+        onOutgoingCallAccepted: (callID, invitee) => {
+          console.log("💕Call Id: " + callID + ", 👌Invitee: " + JSON.stringify(invitee));
+          setCallID("123");
+        },
+        requireConfig: (data) => {
+          const callConfig = ONE_ON_ONE_VOICE_CALL_CONFIG;
+          return {
+            durationConfig: {
+              isVisible: true,
+              onDurationUpdate: (duration) => {
+                console.log("🙌🙌🙌", data);
+                setDuration(duration);
+                if (duration === 0.1 * 60) {
+                  ZegoUIKitPrebuiltCallService.hangUp();
+                }
               },
-            };
-          },
-          notifyWhenAppRunningInBackgroundOrQuit: true,
-          androidNotificationConfig: {
-            channelID: "AudioChannel",
-            channelName: "CC",
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error initializing ZegoUIKitPrebuiltCallService:", error);
-    }
-  }, []);
+            },
+            ...callConfig,
+            onHangUp: () => {
+              console.log("🙌🙌🙌🙌🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
+              navigation.navigate("Home");
+            },
+          };
+        },
+        notifyWhenAppRunningInBackgroundOrQuit: true,
+        androidNotificationConfig: {
+          channelID: "AudioChannel",
+          channelName: "CC",
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Error initializing ZegoUIKitPrebuiltCallService:", error);
+  }
+  // }, []);
 
 
   return (
@@ -146,10 +196,10 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
             rounded
             size={"medium"}
             avatarStyle={{ borderWidth: 3, borderColor: "white" }}
-            source={{ uri: data?.pfp }}
+            source={{ uri: profileRes.data?.pfp }}
           />
           <View>
-            <Text style={styles.boldText}>Hi! {data?.firstName}</Text>
+            <Text style={styles.boldText}>Hi! {profileRes.data?.firstName}</Text>
             <Text style={styles.greyText}>Your Credits: {0}</Text>
           </View>
         </View>
@@ -159,7 +209,8 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
           containerStyle={styles.buyCreditsContainer}
           titleStyle={styles.buyCreditsTitle}
           title={"Buy Credits"}
-          onPress={() => handleLogout()}
+          // onPress={() => handleLogout()}
+          onPress={() => navigation.navigate("BuyCredits")}
         />
       </View>
 
