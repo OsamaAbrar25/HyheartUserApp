@@ -21,11 +21,13 @@ export const userApi = createApi({
     getZegoToken: builder.query<undefined, string>({ query: () => `zego/validate-token` }),
     getProviders: builder.query<undefined, string[]>({ query: () => `profile/providers` }),
     getProfile: builder.query<undefined, string>({ query: () => `profile` }),
-    validateFirebaseToken: builder.mutation({ query: (body) => ({ url: `auth/validate-token`, method: "POST", body }) }),
+    validateFirebaseToken: builder.mutation({ query: (body) => ({ url: `auth/firebase`, method: "POST", body }) }),
     createCall: builder.mutation({ query: (body) => ({ url: `call`, method: "POST", body }) }),
     updateCallHistory: builder.mutation({ query: (body) => ({ url: `call/${body.id}`, method: "PATCH", body }) }),
     getCallHistory: builder.query<undefined, string>({ query: () => `call` }),
-    
+    validate: builder.mutation({ query: (body) => ({ url: `auth/email`, method: "POST", body }) }),
+    getPlans: builder.query<undefined, string>({ query: () => `plans` }),
+    createPaymentOrder: builder.mutation({ query: (body) => ({ url: `plans/${body.id}/order`, method: "POST", body }) }),
   }),
 });
 
@@ -39,4 +41,7 @@ export const {
   useCreateCallMutation,
   useUpdateCallHistoryMutation,
   useGetCallHistoryQuery,
+  useValidateMutation,
+  useGetPlansQuery,
+  useCreatePaymentOrderMutation,
 } = userApi;

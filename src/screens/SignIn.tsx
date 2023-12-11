@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, Button, Text, ScrollView } from "react-native";
+import { Input } from '@rneui/themed';
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
-import { useValidateFirebaseTokenMutation } from "../apis/user";
+import { useValidateFirebaseTokenMutation, useValidateMutation } from "../apis/user";
 import { useDispatch, useSelector } from "react-redux";
 import { storeJwt, storeUserData } from "../store/slices/authSlice";
 import DisplayAsyncStorageValues from "../components/DisplayAsyncStorageValues";
@@ -15,6 +16,8 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [validateFirebaseToken] = useValidateFirebaseTokenMutation();
   const jwt = useSelector((state: any) => state.auth.jwt);
   const [responseState, setResponseState] = useState<string[]>([])
+  const [text, setText] = useState('')
+  const [validate, validateRes] = useValidateMutation()
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -28,6 +31,8 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
     return () => subscriber();
   }, []);
 
+  console.log(validateRes);
+
   useEffect(() => {
     console.log("🔴" + token);
     if (!initializing && token) {
@@ -39,6 +44,16 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
     setUser(user);
     if (initializing) setInitializing(false);
   };
+
+  // const handleLB = () => {
+  //   validate({email: text})
+  //   // console.log(text);
+    
+  // }
+
+  if (validateRes.isSuccess) {
+    dispatch(storeJwt(validateRes.data.jwt))
+  }
 
   const onGoogleSignIn = async () => {
     try {
@@ -87,7 +102,9 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
       >
         {/* {responseState.map(item => <Text style={{ color: "black" }}>{item}</Text>)} */}
         {!jwt ? (
-          <Button title="Sign in with Google" onPress={onGoogleSignIn} />
+          <>
+            <Button title="Sign in with Google" onPress={onGoogleSignIn} />
+          </>
         ) : (
           navigation.reset({
             index: 0,

@@ -54,6 +54,8 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   //   console.log("😁😁😁❤️❤️❤️", JSON.stringify(createCallRes.data));
   // }
 
+  console.log("😁😁😁❤️❤️❤️", jwt);
+
   const handleCall = () => {
     // console.log("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
     createCall({

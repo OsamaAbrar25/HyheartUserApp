@@ -7,7 +7,7 @@ interface CreditHistoryProps {
   navigation: any;
 }
 
-const CreditHistory: React.FC<CreditHistoryProps> = () => {
+const CreditHistory: React.FC<CreditHistoryProps> = ({ navigation }) => {
   return (
     <View>
       <Header title={"Credit History"} />
