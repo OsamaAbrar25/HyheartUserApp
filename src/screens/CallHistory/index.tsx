@@ -12,39 +12,29 @@ const CallHistory: React.FC<CallHistoryProps> = ({ navigation }) => {
 
   const callHistoryRes = useGetCallHistoryQuery();
 
+  const formatTime = (seconds) => {
+    if (typeof seconds !== 'number' || isNaN(seconds)) {
+      return "Invalid input. Please provide a numeric value.";
+    }
+  
+    // Calculate minutes and remaining seconds
+    var minutes = Math.floor(seconds / 60);
+    var remainingSeconds = seconds % 60;
+  
+    // Format the result
+    var formattedTime = minutes + " min " + remainingSeconds + " sec";
+    
+    return formattedTime;
+  }
+
   return (
     <View>
       <Header title={"Call History"} />
       <View style={{ padding: 10 }}>
 
-        <ListItem
-          containerStyle={{ borderRadius: 6 }}
-          style={{
-            paddingVertical: 4,
-          }}
-        >
-          <ListItem.Content
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <View>
-              <ListItem.Title style={{ fontWeight: "700", fontSize: 12 }}>
-                Provider Name
-              </ListItem.Title>
-              <ListItem.Subtitle style={{ fontSize: 11 }}>
-                09:32 PM
-              </ListItem.Subtitle>
-            </View>
-            <ListItem.Subtitle>24:43</ListItem.Subtitle>
-          </ListItem.Content>
-        </ListItem>
-
         {callHistoryRes.isSuccess &&
           <FlatList
-            data={callHistoryRes.data}
+            data={callHistoryRes.data.filter((item) => item.status === "COMPLETED")}
             renderItem={({ item }) => (
               <ListItem
                 containerStyle={{ borderRadius: 6 }}
@@ -61,13 +51,13 @@ const CallHistory: React.FC<CallHistoryProps> = ({ navigation }) => {
                 >
                   <View>
                     <ListItem.Title style={{ fontWeight: "700", fontSize: 12 }}>
-                      Credit
+                      {item.receiver.firstName}
                     </ListItem.Title>
                     <ListItem.Subtitle style={{ fontSize: 11 }}>
-                      09:32 PM
+                      {item.pickedAt}
                     </ListItem.Subtitle>
                   </View>
-                  <ListItem.Subtitle>+12</ListItem.Subtitle>
+                  <ListItem.Subtitle>{formatTime(item.duration)}</ListItem.Subtitle>
                 </ListItem.Content>
               </ListItem>
             )}

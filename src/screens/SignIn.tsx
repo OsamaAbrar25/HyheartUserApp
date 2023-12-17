@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, Text, ScrollView } from "react-native";
-import { Input } from '@rneui/themed';
+import { View, Text, ScrollView, Image } from "react-native";
+import { Input, Button  } from '@rneui/themed';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { useValidateFirebaseTokenMutation, useValidateMutation } from "../apis/user";
 import { useDispatch, useSelector } from "react-redux";
 import { storeJwt, storeUserData } from "../store/slices/authSlice";
 import DisplayAsyncStorageValues from "../components/DisplayAsyncStorageValues";
+import googleImg from "../assets/images/google.png"
 
 const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [initializing, setInitializing] = useState<boolean>(true);
@@ -18,6 +20,7 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [responseState, setResponseState] = useState<string[]>([])
   const [text, setText] = useState('')
   const [validate, validateRes] = useValidateMutation()
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -31,7 +34,7 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
     return () => subscriber();
   }, []);
 
-  console.log(validateRes);
+  // console.log(validateRes);
 
   useEffect(() => {
     console.log("🔴" + token);
@@ -48,7 +51,7 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
   // const handleLB = () => {
   //   validate({email: text})
   //   // console.log(text);
-    
+
   // }
 
   if (validateRes.isSuccess) {
@@ -57,6 +60,7 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const onGoogleSignIn = async () => {
     try {
+      setLoading(true);
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(
@@ -67,6 +71,9 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
       if (tokenres) {
         setResponseState((prev) => [...prev, tokenres])
         setToken(tokenres);
+        setLoading(false);
+        console.log("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️", tokenres);
+
       }
     } catch (error) {
       console.log(error);
@@ -80,7 +87,7 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
       setResponseState((prev) => [...prev, JSON.stringify(res)])
       if (res.data) {
         console.log("😂" + JSON.stringify(res.data));
-        dispatch(storeJwt(res.data.jwt));
+        dispatch(storeJwt(res.data.token));
 
         jwt && console.log("😂" + jwt);
       } else {
@@ -98,12 +105,18 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View
-        style={{ height: "100%", justifyContent: "center", alignItems: "center" }}
+        style={{ height: "100%", paddingVertical: 100, justifyContent: "flex-end", alignItems: "center" }}
       >
         {/* {responseState.map(item => <Text style={{ color: "black" }}>{item}</Text>)} */}
         {!jwt ? (
           <>
-            <Button title="Sign in with Google" onPress={onGoogleSignIn} />
+            <Button
+              title="Continue with Google"
+              loading={loading}
+              onPress={onGoogleSignIn}
+              icon={ <Image resizeMode="contain" source={require('../assets/images/google.png')} style={{width: 30}} />}
+              buttonStyle={{ borderRadius: 30, width: 300, height: 40, backgroundColor: 'rgba(255, 193, 7, 1)' }}
+            />
           </>
         ) : (
           navigation.reset({
@@ -119,3 +132,4 @@ const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
 };
 
 export default SignIn;
+

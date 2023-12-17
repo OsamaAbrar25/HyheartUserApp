@@ -17,17 +17,21 @@ export const userApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ['Payment'],
   endpoints: (builder) => ({
     getZegoToken: builder.query<undefined, string>({ query: () => `zego/validate-token` }),
-    getProviders: builder.query<undefined, string[]>({ query: () => `profile/providers` }),
+    getProviders: builder.query<undefined, string[]>({ query: () => `provider` }),
     getProfile: builder.query<undefined, string>({ query: () => `profile` }),
     validateFirebaseToken: builder.mutation({ query: (body) => ({ url: `auth/firebase`, method: "POST", body }) }),
     createCall: builder.mutation({ query: (body) => ({ url: `call`, method: "POST", body }) }),
-    updateCallHistory: builder.mutation({ query: (body) => ({ url: `call/${body.id}`, method: "PATCH", body }) }),
+    updateCall: builder.mutation({ query: (body) => ({ url: `call/${body.id}`, method: "PATCH", body }) }),
     getCallHistory: builder.query<undefined, string>({ query: () => `call` }),
+    getCreditHistory: builder.query<undefined, string>({ query: () => `credit/history`, providesTags: ['Payment'], }),
+    getTotalCredit: builder.query<undefined, string>({ query: () => `credit`, providesTags: ['Payment'], }),
     validate: builder.mutation({ query: (body) => ({ url: `auth/email`, method: "POST", body }) }),
     getPlans: builder.query<undefined, string>({ query: () => `plans` }),
-    createPaymentOrder: builder.mutation({ query: (body) => ({ url: `plans/${body.id}/order`, method: "POST", body }) }),
+    createPaymentOrder: builder.mutation({ query: (body) => ({ url: `payment/createOrder?planId=${body.id}`, method: "POST", body }) }),
+    verifyPayment: builder.mutation({ query: (body) => ({ url: `payment/capture?planId=${body.id}`, method: "PATCH", body }), invalidatesTags: ['Payment'] }),
   }),
 });
 
@@ -39,9 +43,12 @@ export const {
   useGetProfileQuery,
   useValidateFirebaseTokenMutation,
   useCreateCallMutation,
-  useUpdateCallHistoryMutation,
+  useUpdateCallMutation,
   useGetCallHistoryQuery,
+  useGetCreditHistoryQuery,
+  useGetTotalCreditQuery,
   useValidateMutation,
   useGetPlansQuery,
   useCreatePaymentOrderMutation,
+  useVerifyPaymentMutation,
 } = userApi;

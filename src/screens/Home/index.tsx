@@ -18,7 +18,8 @@ import {
   useGetProvidersQuery,
   useGetProfileQuery,
   useCreateCallMutation,
-  useUpdateCallHistoryMutation,
+  useUpdateCallMutation,
+  useGetTotalCreditQuery,
 } from "../../apis/user";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store";
@@ -37,8 +38,10 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   const response = useGetZegoTokenQuery();
   const providersListRes = useGetProvidersQuery();
   const profileRes = useGetProfileQuery();
+  const totalCreditRes = useGetTotalCreditQuery();
+
   const [createCall, createCallRes] = useCreateCallMutation();
-  const [updateCallHistory, updateCallHistoryRes] = useUpdateCallHistoryMutation();
+  const [updateCall, updateCallRes] = useUpdateCallMutation();
 
   const dispatch = useDispatch();
   const userdata = useSelector((state: { auth: AuthState }) => state.auth.userData);
@@ -54,12 +57,12 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   //   console.log("😁😁😁❤️❤️❤️", JSON.stringify(createCallRes.data));
   // }
 
-  console.log("😁😁😁❤️❤️❤️", jwt);
+  console.log("😁😁😁❤️❤️❤️ JWT: ", jwt);
 
   const handleCall = () => {
     // console.log("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
     createCall({
-      recieverId: "31d5c34f-02e5-4ddb-8b47-94c88fcce95f"
+      receiverId: "31d5c34f-02e5-4ddb-8b47-94c88fcce95f"
     })
   }
 
@@ -87,7 +90,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
 
   //     if (createCallRes.data.id) {
   //       const res = 
-  //        updateCallHistory(
+  //        updateCall(
   //         {
   //           id: createCallRes.data.id,
   //           status: "CONNECTED",
@@ -103,7 +106,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   useEffect(() => {
     if (createCallRes.isSuccess && callID) {
       // console.log("❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️");
-      updateCallHistory(
+      updateCall(
         {
           id: createCallRes.data.id,
           status: "CONNECTED"
@@ -115,11 +118,11 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
 
   useEffect(() => {
     if (createCallRes.isSuccess && duration > 0) {
-      updateCallHistory(
+      updateCall(
         {
           id: createCallRes.data.id,
           status: "CONNECTED",
-          duration: duration,
+          pickedAt: new Date().getTime().toString()
         })
     }
   }, [createCallRes.isSuccess, duration])
@@ -164,7 +167,14 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
               onDurationUpdate: (duration) => {
                 console.log("🙌🙌🙌", data);
                 setDuration(duration);
-                if (duration === 0.1 * 60) {
+                if (duration === 0.25 * 60) {
+                  updateCall(
+                    {
+                      id: createCallRes.data.id,
+                      status: "CONNECTED",
+                      duration: duration,
+                      disconnectedAt: new Date().getTime().toString()
+                    })
                   ZegoUIKitPrebuiltCallService.hangUp();
                 }
               },
@@ -172,6 +182,13 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
             ...callConfig,
             onHangUp: () => {
               console.log("🙌🙌🙌🙌🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
+              updateCall(
+                {
+                  id: createCallRes.data.id,
+                  status: "CONNECTED",
+                  duration: duration,
+                  disconnectedAt: new Date().getTime().toString()
+                })
               navigation.navigate("Home");
             },
           };
@@ -202,7 +219,10 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
           />
           <View>
             <Text style={styles.boldText}>Hi! {profileRes.data?.firstName}</Text>
-            <Text style={styles.greyText}>Your Credits: {0}</Text>
+            {
+              totalCreditRes.isSuccess &&
+              <Text style={styles.greyText}>Your Credits: {totalCreditRes.data.creditsAfter.toFixed(1)}</Text>
+            }
           </View>
         </View>
         <Button

@@ -1,15 +1,16 @@
 import { Button } from '@rneui/themed'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import RazorpayCheckout from 'react-native-razorpay';
 import Header from '../components/Header';
-import { useCreatePaymentOrderMutation, useGetPlansQuery } from '../apis/user';
+import { useCreatePaymentOrderMutation, useGetPlansQuery, useVerifyPaymentMutation } from '../apis/user';
 import { FlatList } from 'react-native';
 
 const BuyCredits = ({ navigation }) => {
 
   const getPlans = useGetPlansQuery();
   const [createPaymentOrder, createPaymentOrderRes] = useCreatePaymentOrderMutation()
+  const [verifyPayment, verifyPaymentRes] = useVerifyPaymentMutation()
 
   const handleCreateOrder = (item) => {
     createPaymentOrder({
@@ -18,14 +19,14 @@ const BuyCredits = ({ navigation }) => {
   }
 
   const handlePay = (data) => {
-    var options = {
+    let options = {
       description: 'Buy credits',
       image: 'https://i.imgur.com/3g7nmJC.jpg',
-      currency: data.currency,
+      currency: data.order.currency,
       key: 'rzp_test_KEmBrgdn1ZFENY',
-      amount: data.amount,
+      amount: data.order.amount,
       name: 'Hyheart',
-      order_id: data.orderId,//Replace this with an order_id created using Orders API.
+      order_id: data.order.orderId,//Replace this with an order_id created using Orders API.
       prefill: {
         email: 'osama@example.com',
         contact: '9191919191',
@@ -37,6 +38,10 @@ const BuyCredits = ({ navigation }) => {
       .then((data) => {
         // handle success
         console.log(`Success❤️: ${data.razorpay_payment_id}`);
+        verifyPayment({
+          id: createPaymentOrderRes.data.order.planId,
+          paymentId: data.razorpay_payment_id
+        })
         navigation.navigate("CreditHistoryTab");
       })
       .catch((error) => {
@@ -45,10 +50,20 @@ const BuyCredits = ({ navigation }) => {
       });
   }
 
-  if (createPaymentOrderRes.isSuccess) {
-    handlePay(createPaymentOrderRes.data)
-    console.log(JSON.stringify(createPaymentOrderRes.data));
+  useEffect(() => {
+    if (createPaymentOrderRes.isSuccess) {
+      handlePay(createPaymentOrderRes.data)
+      console.log(JSON.stringify(createPaymentOrderRes.data));
+   
+    }
+  }, [createPaymentOrderRes.isSuccess])
 
+  if(verifyPaymentRes.isSuccess) {
+    console.log("Payment Verified: ", JSON.stringify(verifyPaymentRes));
+  }
+
+  if(verifyPaymentRes.isError) {
+    console.log("Payment Verified: ", JSON.stringify(verifyPaymentRes));
   }
 
   if (createPaymentOrderRes.isError) {
