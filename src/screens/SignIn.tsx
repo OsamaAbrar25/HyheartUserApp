@@ -7,8 +7,6 @@ import auth from "@react-native-firebase/auth";
 import { useValidateFirebaseTokenMutation, useValidateMutation } from "../apis/user";
 import { useDispatch, useSelector } from "react-redux";
 import { storeJwt, storeUserData } from "../store/slices/authSlice";
-import DisplayAsyncStorageValues from "../components/DisplayAsyncStorageValues";
-import googleImg from "../assets/images/google.png"
 
 const SignIn: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [initializing, setInitializing] = useState<boolean>(true);

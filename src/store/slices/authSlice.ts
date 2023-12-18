@@ -4,6 +4,7 @@ interface UserData {
   name?: any;
   photoURL?: any;
   id?: any;
+  zegoId?: any;
   email?: any;
 }
 

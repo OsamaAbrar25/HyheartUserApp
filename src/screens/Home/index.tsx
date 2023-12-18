@@ -34,8 +34,10 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
 
   const [callID, setCallID] = useState('');
   const [duration, setDuration] = useState(0);
+  const [callHistoryId, setCallHistoryId] = useState(null);
+  const [isHangedUp, setIsHangedUp] = useState(false);
 
-  const response = useGetZegoTokenQuery();
+  // const response = useGetZegoTokenQuery();
   const providersListRes = useGetProvidersQuery();
   const profileRes = useGetProfileQuery();
   const totalCreditRes = useGetTotalCreditQuery();
@@ -45,25 +47,20 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const userdata = useSelector((state: { auth: AuthState }) => state.auth.userData);
-  const userID: string = userdata.id;
+  const userZegoID: string = userdata.zegoId;
   const name = useSelector((state: RootState) => state.auth.userData.name);
   const photoURL = useSelector((state: RootState) => state.auth.userData.photoURL);
   const jwt = useSelector((state: RootState) => state.auth.jwt);
   const userName = userdata.name;
-  const callHistoryId = useSelector((state: { auth: AuthState }) => state.auth.callHistoryId);
-  // const duration = useSelector((state: { auth: AuthState }) => state.auth.duration);
-
-  // if (createCallRes.isSuccess) {
-  //   console.log("😁😁😁❤️❤️❤️", JSON.stringify(createCallRes.data));
-  // }
 
   console.log("😁😁😁❤️❤️❤️ JWT: ", jwt);
 
-  const handleCall = () => {
-    // console.log("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
+  const handleCall = (id) => {
+    console.log("🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️❤️❤️❤️❤️❤️❤️");
     createCall({
-      receiverId: "31d5c34f-02e5-4ddb-8b47-94c88fcce95f"
+      receiverId: id
     })
+    // }
   }
 
   const handleLogout = async () => {
@@ -76,56 +73,27 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
     }
   };
 
-  // useEffect(() => {
-  //   // console.log("😘😘😘😘😘😘😘😘😘😘😘😘😘😘😘", createCallRes.data);
-  // }, [createCallRes.isSuccess])
-
-  // const config: UIKitConfig = {
-  //   ...ONE_ON_ONE_VOICE_CALL_CONFIG,
-  //   onOnlySelfInRoom: () => {
-  //     navigation.navigate("Home");
-  //   },
-  //   onHangUp: () => {
-  //     console.log("😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁❤️");
-
-  //     if (createCallRes.data.id) {
-  //       const res = 
-  //        updateCall(
-  //         {
-  //           id: createCallRes.data.id,
-  //           status: "CONNECTED",
-  //           duration: duration,
-  //         })
-  //         console.log("❤️❤️❤️❤️❤️😘😘😘😘🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️",JSON.stringify(res));
-
-  //     }
-  //     navigation.navigate("Home");
-  //   },
-  // };
 
   useEffect(() => {
     if (createCallRes.isSuccess && callID) {
       // console.log("❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️");
       updateCall(
         {
-          id: createCallRes.data.id,
-          status: "CONNECTED"
+          id: callHistoryId,
+          status: "CONNECTED",
+          pickedAt: new Date().toString()
         })
-      dispatch(storeCallHistoryId(createCallRes.data.id))
-      dispatch(storeDuration(duration))
+    }
+    if (createCallRes.isSuccess) {
+      setCallHistoryId(createCallRes.data.id)
     }
   }, [createCallRes.isSuccess, callID])
 
-  useEffect(() => {
-    if (createCallRes.isSuccess && duration > 0) {
-      updateCall(
-        {
-          id: createCallRes.data.id,
-          status: "CONNECTED",
-          pickedAt: new Date().getTime().toString()
-        })
-    }
-  }, [createCallRes.isSuccess, duration])
+
+
+  // useEffect(() => {
+  //   console.log("Create Call 😘😘😘😘😘 ", createCallRes.error);
+  // }, [createCallRes.isSuccess, duration, createCallRes])
 
   useEffect(() => {
     if (profileRes.data) {
@@ -133,21 +101,40 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
         storeUserData({
           name: profileRes.data.firstName,
           photoURL: profileRes.data.pfp,
-          id: profileRes.data.id.substring(0, 8),
-          // email: res.data.email,
+          id: profileRes.data.id,
+          zegoId: profileRes.data.zegoId,
         })
       );
       userdata && console.log("😂" + JSON.stringify(userdata));
     }
   }, [profileRes.data, profileRes.isLoading]);
 
+  useEffect(() => {
+    if (duration > 0 && callHistoryId && isHangedUp) {
+      console.log("😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️🥶🥶🥶🥶🥶", duration);
+      updateCall(
+        {
+          id: callHistoryId,
+          status: "COMPLETED",
+          duration_s: duration,
+          disconnectedAt: new Date().toString()
+        })
+        setIsHangedUp(false)
+    }
+
+  }, [isHangedUp])
+
 
   // useEffect(() => {
+  //   console.log("😎😎😎😎😎😎", JSON.stringify(updateCallRes));
+
+  // }, [updateCallRes])
+
   try {
     ZegoUIKitPrebuiltCallService.init(
       APP_ID, // You can get it from ZEGOCLOUD's console
       APP_SIGN, // You can get it from ZEGOCLOUD's console
-      userID, // It can be any valid characters, but we recommend using a phone number.
+      userZegoID, // It can be any valid characters, but we recommend using a phone number.
       userName,
       [ZIM, ZPNs],
       {
@@ -164,31 +151,35 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
           return {
             durationConfig: {
               isVisible: true,
-              onDurationUpdate: (duration) => {
-                console.log("🙌🙌🙌", data);
-                setDuration(duration);
-                if (duration === 0.25 * 60) {
-                  updateCall(
-                    {
-                      id: createCallRes.data.id,
-                      status: "CONNECTED",
-                      duration: duration,
-                      disconnectedAt: new Date().getTime().toString()
-                    })
+              onDurationUpdate: (duration2) => {
+                console.log("🙌🙌🙌", duration2);
+                setDuration(duration2);
+                if (duration2 === 2 * 60) {
+                  // updateCall(
+                  //   {
+                  //     id: callHistoryId,
+                  //     status: "COMPLETED",
+                  //     duration_s: duration2,
+                  //     disconnectedAt: new Date().toString()
+                  //   })
+                  
                   ZegoUIKitPrebuiltCallService.hangUp();
+                  setIsHangedUp(true);
                 }
               },
             },
             ...callConfig,
             onHangUp: () => {
-              console.log("🙌🙌🙌🙌🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️");
-              updateCall(
-                {
-                  id: createCallRes.data.id,
-                  status: "CONNECTED",
-                  duration: duration,
-                  disconnectedAt: new Date().getTime().toString()
-                })
+              console.log("🙌🙌🙌🙌🤷‍♂️🤷‍♂️🤷‍♂️🤷‍♂️", duration, callHistoryId);
+              setIsHangedUp(true);
+              // updateCall(
+              //   {
+              //     id: callHistoryId,
+              //     status: "COMPLETED",
+              //     duration_s: duration,
+              //     disconnectedAt: new Date().toString()
+              //   })
+
               navigation.navigate("Home");
             },
           };
@@ -239,7 +230,8 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
       <View style={styles.activeUsers}>
         <Text style={styles.boldText}>Active Users</Text>
       </View>
-      {providersListRes.isSuccess && (
+
+      {providersListRes.data && (
         <FlatList
           data={providersListRes.data}
           renderItem={({ item }) => (
@@ -293,13 +285,13 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
               <ZegoSendCallInvitationButton
                 invitees={[
                   {
-                    userID: `${item.id.substring(0, 8)}`,
+                    userID: `${item.zegoId}`,
                     userName: `${item.firstName}`,
                   },
                 ]}
                 isVideoCall={false}
                 resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
-                onPressed={() => handleCall()}
+                onPressed={() => handleCall(item.id)}
               />
             </ListItem>
           )}

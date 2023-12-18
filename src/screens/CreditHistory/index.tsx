@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, Image } from "react-native";
 import Header from "../../components/Header";
 import { Button, ListItem } from "@rneui/themed";
 import { useGetCreditHistoryQuery, useGetTotalCreditQuery } from "../../apis/user";
@@ -27,9 +27,12 @@ const CreditHistory: React.FC<CreditHistoryProps> = ({ navigation }) => {
         >
           {
             totalCreditRes.isSuccess &&
-            <Text style={{ textAlign: "center", color: "white", fontSize: 16 }}>
-              {totalCreditRes.data.creditsAfter.toFixed(1)}
-            </Text>
+            <View style={{ alignItems: "center", justifyContent: "center", backgroundColor: "black", flexDirection: "row" }}>
+              <Image resizeMode="contain" source={require('../../assets/images/coin.png')} style={{ width: 20, marginRight: 4 }} />
+              <Text style={{ textAlign: "center", color: "white", fontSize: 16 }}>
+                {totalCreditRes.data.creditsAfter.toFixed(1)}
+              </Text>
+            </View>
           }
 
           <Text style={{ textAlign: "center", color: "white", fontSize: 11 }}>
@@ -89,7 +92,7 @@ const CreditHistory: React.FC<CreditHistoryProps> = ({ navigation }) => {
                         ?
                         <ListItem.Subtitle>+{item.creditsChange}</ListItem.Subtitle>
                         :
-                        <ListItem.Subtitle>-{item.creditsChange}</ListItem.Subtitle>
+                        <ListItem.Subtitle>{item.creditsChange}</ListItem.Subtitle>
                     }
                   </ListItem.Content>
                 </ListItem>
