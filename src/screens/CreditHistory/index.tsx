@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, FlatList, Image } from "react-native";
+import { View, Text, FlatList, Image, ActivityIndicator } from "react-native";
 import Header from "../../components/Header";
 import { Button, ListItem } from "@rneui/themed";
 import { useGetCreditHistoryQuery, useGetTotalCreditQuery } from "../../apis/user";
+import moment from "moment";
 
 interface CreditHistoryProps {
   navigation: any;
@@ -16,7 +17,9 @@ const CreditHistory: React.FC<CreditHistoryProps> = ({ navigation }) => {
   return (
     <View>
       <Header title={"Credit History"} />
+
       <View style={{ padding: 10 }}>
+
         <View
           style={{
             backgroundColor: "#5E449B",
@@ -25,10 +28,11 @@ const CreditHistory: React.FC<CreditHistoryProps> = ({ navigation }) => {
             gap: 6,
           }}
         >
+          {totalCreditRes.isLoading && <ActivityIndicator />}
           {
             totalCreditRes.isSuccess &&
-            <View style={{ alignItems: "center", justifyContent: "center", backgroundColor: "black", flexDirection: "row" }}>
-              <Image resizeMode="contain" source={require('../../assets/images/coin.png')} style={{ width: 20, marginRight: 4 }} />
+            <View style={{ alignItems: "center", justifyContent: "center", flexDirection: "row" }}>
+              <Image resizeMode="contain" source={require('../../assets/images/coin.png')} style={{ width: 18, height: 18, marginRight: 4 }} />
               <Text style={{ textAlign: "center", color: "white", fontSize: 16 }}>
                 {totalCreditRes.data.creditsAfter.toFixed(1)}
               </Text>
@@ -51,8 +55,8 @@ const CreditHistory: React.FC<CreditHistoryProps> = ({ navigation }) => {
             />
           </View>
         </View>
-        <View style={{ marginVertical: 32 }}>
-          {/* <Text style={{ marginBottom: 8, color: "gray" }}>02 Nov, 2023</Text> */}
+        <View style={{ marginVertical: 32, height: '100%' }}>
+          {creditHistoryRes.isLoading && <ActivityIndicator size="large" />}
           {creditHistoryRes.isSuccess &&
             <FlatList
               data={creditHistoryRes.data}
@@ -74,17 +78,23 @@ const CreditHistory: React.FC<CreditHistoryProps> = ({ navigation }) => {
                       {
                         (item.creditsAfter > item.creditsBefore)
                           ?
-                          <ListItem.Title style={{ fontWeight: "700", fontSize: 12 }}>
-                            Credit
-                          </ListItem.Title>
+                          <View style={{ flexDirection: "row", gap: 8 }}>
+                            <Image resizeMode="contain" source={require('../../assets/images/credit.png')} style={{ width: 16, height: 16 }} />
+                            <ListItem.Title style={{ fontWeight: "700", fontSize: 12 }}>
+                              <Text>Credit</Text>
+                            </ListItem.Title>
+                          </View>
                           :
-                          <ListItem.Title style={{ fontWeight: "700", fontSize: 12 }}>
-                            Debit
-                          </ListItem.Title>
+                          <View style={{ flexDirection: "row", gap: 8 }}>
+                            <Image resizeMode="contain" source={require('../../assets/images/debit.png')} style={{ width: 16, height: 16 }} />
+                            <ListItem.Title style={{ fontWeight: "700", fontSize: 12 }}>
+                              Debit
+                            </ListItem.Title>
+                          </View>
                       }
 
                       <ListItem.Subtitle style={{ fontSize: 11 }}>
-                        {item.created_at}
+                        {moment(item.created_at).format('lll')}
                       </ListItem.Subtitle>
                     </View>
                     {

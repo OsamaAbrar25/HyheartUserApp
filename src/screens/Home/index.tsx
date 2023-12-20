@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Alert } from "react-native";
+import { View, Text, StyleSheet, FlatList, Alert, Image } from "react-native";
 import { Button, ListItem, Avatar } from "@rneui/themed";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import auth from "@react-native-firebase/auth";
@@ -119,7 +119,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
           duration_s: duration,
           disconnectedAt: new Date().toString()
         })
-        setIsHangedUp(false)
+      setIsHangedUp(false)
     }
 
   }, [isHangedUp])
@@ -162,7 +162,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
                   //     duration_s: duration2,
                   //     disconnectedAt: new Date().toString()
                   //   })
-                  
+
                   ZegoUIKitPrebuiltCallService.hangUp();
                   setIsHangedUp(true);
                 }
@@ -204,7 +204,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
         <View style={styles.profileInfo}>
           <Avatar
             rounded
-            size={"medium"}
+            size={"small"}
             avatarStyle={{ borderWidth: 3, borderColor: "white" }}
             source={{ uri: profileRes.data?.pfp }}
           />
@@ -212,7 +212,10 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
             <Text style={styles.boldText}>Hi! {profileRes.data?.firstName}</Text>
             {
               totalCreditRes.isSuccess &&
-              <Text style={styles.greyText}>Your Credits: {totalCreditRes.data.creditsAfter.toFixed(1)}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Image resizeMode="contain" source={require('../../assets/images/coin.png')} style={{ width: 16, height: 16, marginRight: 4 }} />
+                <Text style={styles.creditText}>{totalCreditRes.data.creditsAfter.toFixed(1)}</Text>
+              </View>
             }
           </View>
         </View>
@@ -227,40 +230,44 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
         />
       </View>
 
-      <View style={styles.activeUsers}>
-        <Text style={styles.boldText}>Active Users</Text>
-      </View>
+      <View style={{backgroundColor:'#f3f3f3', height: '100%', paddingVertical: 8}}>
+        <View style={styles.activeUsers}>
+          <Text style={{ marginBottom: 4, ...styles.boldText }}>Active Users</Text>
+        </View>
 
-      {providersListRes.data && (
-        <FlatList
-          data={providersListRes.data}
-          renderItem={({ item }) => (
-            <ListItem
-              style={{
-                paddingVertical: 0,
-              }}
-            >
-              <Avatar
-                rounded
-                source={{ uri: item.pfp }}
-                avatarStyle={{ borderWidth: 3, borderColor: "gold" }}
-                size={50}
-              />
-              <ListItem.Content>
-                <ListItem.Title style={{ fontWeight: "700", fontSize: 14 }}>
-                  {item.firstName}
-                </ListItem.Title>
-                <ListItem.Subtitle style={{ fontSize: 11 }}>
-                  {item.gender}M | {item.dob}18-25 Years
-                </ListItem.Subtitle>
-              </ListItem.Content>
-              <Icon
+        {providersListRes.data && (
+          <FlatList
+            data={providersListRes.data}
+            renderItem={({ item }) => (
+              <ListItem
+                style={{
+                  paddingVertical: 0,
+                  margin: 6,
+                  borderRadius: 10,
+                  overflow: "hidden"
+                }}
+              >
+                <Avatar
+                  rounded
+                  source={{ uri: item.pfp }}
+                  avatarStyle={{ borderWidth: 3, borderColor: "gold" }}
+                  size={50}
+                />
+                <ListItem.Content>
+                  <ListItem.Title style={{ fontWeight: "700", fontSize: 14 }}>
+                    {item.firstName}
+                  </ListItem.Title>
+                  <ListItem.Subtitle style={{ fontSize: 11 }}>
+                    {item.gender}M | {item.dob}18-25 Years
+                  </ListItem.Subtitle>
+                </ListItem.Content>
+                {/* <Icon
                 name="user-large"
                 size={25}
                 color="#5E449B"
                 onPress={() => navigation.navigate("UserProfile")}
-              />
-              {/* <Button title='Call' onPress={() => {
+              /> */}
+                {/* <Button title='Call' onPress={() => {
                 // const newInvitees = invitees.map((inviteeID) => {
                 //   return { userID: inviteeID, userName: 'user_' + inviteeID };
                 // });
@@ -282,23 +289,23 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
                     }
                   );
               }} /> */}
-              <ZegoSendCallInvitationButton
-                invitees={[
-                  {
-                    userID: `${item.zegoId}`,
-                    userName: `${item.firstName}`,
-                  },
-                ]}
-                isVideoCall={false}
-                resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
-                onPressed={() => handleCall(item.id)}
-              />
-            </ListItem>
-          )}
-          keyExtractor={(item) => item.id}
-        />
-      )}
-
+                <ZegoSendCallInvitationButton
+                  invitees={[
+                    {
+                      userID: `${item.zegoId}`,
+                      userName: `${item.firstName}`,
+                    },
+                  ]}
+                  isVideoCall={false}
+                  resourceID={"zego_data"} // Please fill in the resource ID name that has been configured in the ZEGOCLOUD's console here.
+                  onPressed={() => handleCall(item.id)}
+                />
+              </ListItem>
+            )}
+            keyExtractor={(item) => item.id}
+          />
+        )}
+      </View>
     </View>
   );
 };
@@ -309,8 +316,8 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FADD9A",
-    marginBottom: 16,
+    // backgroundColor: "#FADD9A",
+    // marginBottom: 16,
   },
   profileInfo: {
     flexDirection: "row",
@@ -321,9 +328,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
   },
-  greyText: {
-    fontSize: 12,
-    color: "gray",
+  creditText: {
+    fontSize: 11,
+    color: "black",
   },
   buyCreditsButton: {
     paddingHorizontal: 20,

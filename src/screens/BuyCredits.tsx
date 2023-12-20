@@ -1,6 +1,6 @@
 import { Button } from '@rneui/themed'
 import React, { useEffect } from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native'
 import RazorpayCheckout from 'react-native-razorpay';
 import Header from '../components/Header';
 import { useCreatePaymentOrderMutation, useGetPlansQuery, useVerifyPaymentMutation } from '../apis/user';
@@ -54,15 +54,15 @@ const BuyCredits = ({ navigation }) => {
     if (createPaymentOrderRes.isSuccess) {
       handlePay(createPaymentOrderRes.data)
       console.log(JSON.stringify(createPaymentOrderRes.data));
-   
+
     }
   }, [createPaymentOrderRes.isSuccess])
 
-  if(verifyPaymentRes.isSuccess) {
+  if (verifyPaymentRes.isSuccess) {
     console.log("Payment Verified: ", JSON.stringify(verifyPaymentRes));
   }
 
-  if(verifyPaymentRes.isError) {
+  if (verifyPaymentRes.isError) {
     console.log("Payment Verified: ", JSON.stringify(verifyPaymentRes));
   }
 
@@ -74,7 +74,9 @@ const BuyCredits = ({ navigation }) => {
     <View>
       <Header title='Buy Credits' />
 
-      <View style={{ paddingHorizontal: 8, paddingVertical: 16 }}>
+      <View style={{ paddingHorizontal: 8, paddingVertical: 16, height: '100%', justifyContent:'center' }}>
+
+        {getPlans.isLoading && <ActivityIndicator size="large" />}
 
         {getPlans.isSuccess && (
           <FlatList
@@ -83,11 +85,14 @@ const BuyCredits = ({ navigation }) => {
               <TouchableOpacity style={{ marginBottom: 16 }} onPressIn={() => handleCreateOrder(item)} >
                 <View style={{ padding: 24, backgroundColor: '#5E449B', borderRadius: 10 }}>
                   <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-                    <Text style={{ fontSize: 22, fontWeight: '800', color: 'white' }}> ₹{item.discountPrice}</Text>
+                    <Text style={{ fontSize: 22, fontWeight: '800', color: 'white' }}>₹{item.discountPrice}</Text>
                     <Text style={{ textDecorationLine: 'line-through', color: 'white' }}> ₹{item.price} </Text>
                   </View>
                   <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Text style={{ color: 'white' }}>{item.credits} credits</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                      <Text style={{ color: 'white' }}>{item.credits}</Text>
+                      <Image resizeMode="contain" source={require('../assets/images/coin.png')} style={{ width: 16, height: 16, marginRight: 4 }} />
+                    </View>
                     <Text style={{ fontSize: 10, color: 'silver' }}>*Taxes extra as applicable</Text>
                   </View>
                 </View>
